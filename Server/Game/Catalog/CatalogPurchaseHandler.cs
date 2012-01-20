@@ -34,6 +34,7 @@ namespace Snowlight.Game.Catalog
         {
             lock (mPurchaseSyncRoot)
             {
+                string Color = "ffffff";
                 int TotalCreditCost = Item.CostCredits;
                 int TotalApCost = Item.CostActivityPoints;
 
@@ -56,14 +57,13 @@ namespace Snowlight.Game.Catalog
                         case ItemBehavior.Pet:
 
                             PetData = ItemFlags.Split('\n');
-
                             if (PetData.Length != 3)
                             {
                                 return;
                             }
 
                             string Name = PetData[0];
-                            string Color = PetData[2];
+                            Color = PetData[2];
                             
                             int Race = 0;
                             int.TryParse(PetData[1], out Race);
@@ -81,7 +81,8 @@ namespace Snowlight.Game.Catalog
                                 }
                             }
 
-                            if (PetName.VerifyPetName(Name) != PetNameError.NameOk || Color.ToLower() != "ffffff" || !RaceOk)
+                           /// if (PetName.VerifyPetName(Name) != PetNameError.NameOk || Color.ToLower() != "ffffff" || !RaceOk)
+                            if (PetName.VerifyPetName(Name) != PetNameError.NameOk || !RaceOk) // WHY COLOR???
                             {
                                 return;
                             }
@@ -123,10 +124,11 @@ namespace Snowlight.Game.Catalog
 
                 for (int i = 0; i < Item.Amount; i++)
                 {
+                    
                     switch (Item.Definition.Type)
                     {
                         default:
-
+                            
                             List<Item> GeneratedGenericItems = new List<Item>();
                             double ExpireTimestamp = 0;
 
@@ -197,7 +199,7 @@ namespace Snowlight.Game.Catalog
 
                         case ItemType.Pet:
 
-                            Pet Pet = PetFactory.CreatePet(MySqlClient, Session.CharacterId, Item.Definition.BehaviorData, PetData[0], int.Parse(PetData[1]));
+                            Pet Pet = PetFactory.CreatePet(MySqlClient, Session.CharacterId, Item.Definition.BehaviorData, PetData[0], int.Parse(PetData[1]), Color.ToLower());
                             Session.PetInventoryCache.Add(Pet);
 
                             Session.SendData(InventoryPetAddedComposer.Compose(Pet));
@@ -267,8 +269,7 @@ namespace Snowlight.Game.Catalog
                 {
                     default:
 
-                        CatalogItem Item = Page.GetItem(ItemId);
-
+                        CatalogItem Item = Page.GetItem(ItemId); 
                         if (Item == null || (Item.ClubRestriction == 1 && !Session.HasRight("club_regular")) || 
                             (Item.ClubRestriction == 2 && !Session.HasRight("club_vip")))
                         {

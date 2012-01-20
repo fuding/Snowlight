@@ -349,7 +349,13 @@ namespace Snowlight.Game.Sessions
 
         public bool HasRight(string Right)
         {
-            return mBadgeCache != null && mBadgeCache.HasRight(Right);
+            ClubSubscriptionLevel level = ClubSubscriptionLevel.None;
+            if (mSubscriptionManager != null)
+            {
+                level = mSubscriptionManager.SubscriptionLevel;
+            }
+
+            return RightsManager.GetRightsForRank(mCharacterInfo.Rank, level, mCharacterInfo.IsPremium).Contains(Right);
         }
 
         public void TryAuthenticate(string Ticket, string RemoteAddress)
@@ -372,10 +378,12 @@ namespace Snowlight.Game.Sessions
                     return;
                 }
 
-                mCharacterInfo = Info;
+                mCharacterInfo = Info;                
 
                 mAchieventCache = new AchievementCache(MySqlClient, CharacterId);
                 mBadgeCache = new BadgeCache(MySqlClient, CharacterId, mAchieventCache);
+
+                RightsManager.CleanBadges(mCharacterInfo.Rank, this);
 
                 if (!HasRight("login"))
                 {
@@ -414,11 +422,20 @@ namespace Snowlight.Game.Sessions
                 if (mSubscriptionManager.SubscriptionLevel < ClubSubscriptionLevel.BasicClub)
                 {
                     mBadgeCache.DisableSubscriptionBadge("ACH_BasicClub");
+                }              
+
+                if (mCharacterInfo.IsPremium)
+                {
+                    ServerMessage Welcome = new ServerMessage(575);
+                    Welcome.AppendInt32(1);
+                    Welcome.AppendInt32(0);
+                    Welcome.AppendInt32(1);
+                    SendData(Welcome);
                 }
 
                 mAvatarEffectCache.CheckEffectExpiry(this);
 
-                mAuthProcessed = true;
+                mAuthProcessed = true;            
 
                 SendData(AuthenticationOkComposer.Compose());
                 SendData(FuseRightsListComposer.Compose(this));
@@ -465,7 +482,6 @@ namespace Snowlight.Game.Sessions
         private void OnReceiveData(IAsyncResult Result)
         {
             int ByteCount = 0;
-
             try
             {
                 if (mSocket != null)
@@ -481,7 +497,7 @@ namespace Snowlight.Game.Sessions
                 return;
             }
 
-            ProcessData(ByteUtil.Subbyte(mBuffer, 0, ByteCount));
+            ProcessData(ByteUtil.Subbyte(mBuffer, 0, ByteCount)); 
             BeginReceive();
         }
 
@@ -496,8 +512,10 @@ namespace Snowlight.Game.Sessions
             {
                 if (mSocket != null)
                 {
-                    Output.WriteLine("[SND][" + mId + "]: " + Constants.DefaultEncoding.GetString(Data),
-                        OutputLevel.DebugInformation);
+                    if (Program.DEBUG)
+                    {
+                        Output.WriteLine("[SND][" + mId + "]: " + Constants.DefaultEncoding.GetString(Data), OutputLevel.DebugInformation);
+                    }
                     mSocket.BeginSend(Data, 0, Data.Length, SocketFlags.None, new AsyncCallback(OnDataSent), null);
                 }
             }
@@ -562,7 +580,10 @@ namespace Snowlight.Game.Sessions
 
                     if (Message != null)
                     {
-                        Output.WriteLine("[RCV][" + mId + "]: " + Message.ToString(), OutputLevel.DebugInformation);
+                        if (Program.DEBUG)
+                        {
+                            Output.WriteLine("[RCV][" + mId + "]: " + Message.ToString(), OutputLevel.DebugInformation);
+                        }
 
                         try
                         {
@@ -610,6 +631,7 @@ namespace Snowlight.Game.Sessions
                 }
 
                 MessengerHandler.MarkUpdateNeeded(this, 0, true);
+                MySqlClient.ExecuteNonQuery("UPDATE characters SET online = '0' WHERE id = " + CharacterId + " LIMIT 1");
             }
 
             Output.WriteLine("Stopped and disconnected client " + Id + ".", OutputLevel.DebugInformation);

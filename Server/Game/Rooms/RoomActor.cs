@@ -54,6 +54,7 @@ namespace Snowlight.Game.Rooms
         private bool mAvatarEffectByItem;
         private int mAntiSpamMessagesSent;
         private int mAntiSpamTicks;
+        private bool mWalkingBackwards;
 
         public uint Id
         {
@@ -207,6 +208,19 @@ namespace Snowlight.Game.Rooms
             set
             {
                 mUpdateNeeded = value;
+            }
+        }
+
+        public bool WalkingBackwards
+        {
+            get
+            {
+                return mWalkingBackwards;
+            }
+
+            set
+            {
+                mWalkingBackwards = value;
             }
         }
 
@@ -399,6 +413,33 @@ namespace Snowlight.Game.Rooms
             }
         }
 
+        public Vector2 SquareInFront
+        {
+            get
+            {
+                Vector2 NewPosition = mPosition.GetVector2();
+
+                if (mBodyRotation == 0)
+                {
+                    NewPosition.Y--;
+                }
+                else if (mBodyRotation == 2)
+                {
+                    NewPosition.X++;
+                }
+                else if (mBodyRotation == 4)
+                {
+                    NewPosition.Y++;
+                }
+                else if (mBodyRotation == 6)
+                {
+                    NewPosition.X--;
+                }
+
+                return NewPosition;
+            }
+        }
+
         public RoomActor(uint Id, RoomActorType Type, uint ReferenceId, object ReferenceObject, Vector3 Position, int Rotation, RoomInstance Instance)
         {
             mId = Id;
@@ -413,6 +454,7 @@ namespace Snowlight.Game.Rooms
             mInstance = Instance;
             mEnableClipping = true;
             mMovementSyncRoot = new object();
+            mWalkingBackwards = false;
 
             mPathfinder = PathfinderManager.CreatePathfinderInstance();
             mPathfinder.SetRoomInstance(mInstance, Id);
@@ -739,6 +781,7 @@ namespace Snowlight.Game.Rooms
             }
 
             string LogTargetName = "Unknown User";
+            uint LogTargetId = 0;
 
             if (TargetUserId != mReferenceId)
             {
@@ -759,6 +802,7 @@ namespace Snowlight.Game.Rooms
                     }
 
                     LogTargetName = TargetSession.CharacterInfo.Username;
+                    LogTargetId = TargetSession.CharacterId;
                 }
             }
 
@@ -766,7 +810,7 @@ namespace Snowlight.Game.Rooms
             {
                 using (SqlDatabaseClient MySqlClient = SqlDatabaseManager.GetClient())
                 {
-                    ModerationLogs.LogChatMessage(MySqlClient, mReferenceId, mInstance.RoomId, "(Whisper to " + LogTargetName + ") " + MessageText);
+                    ModerationLogs.LogChatMessage(MySqlClient, mReferenceId, mInstance.RoomId, "(Whisper to " + LogTargetName + " [" + LogTargetId + "]) " + MessageText);
                     IncrecementAntiSpam(MySqlClient);
                 }
             }

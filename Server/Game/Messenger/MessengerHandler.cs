@@ -13,6 +13,8 @@ using Snowlight.Util;
 using Snowlight.Game.Rooms;
 using Snowlight.Game.Achievements;
 using Snowlight.Communication.Incoming;
+using Snowlight.Game.Moderation;
+using Snowlight.Game.Misc.Chat;
 
 namespace Snowlight.Game.Messenger
 {
@@ -212,10 +214,14 @@ namespace Snowlight.Game.Messenger
             if (TargetSession.CharacterInfo.IsMuted)
             {
                 Session.SendData(MessengerImErrorComposer.Compose(3, UserId));
-                return;
             }
 
-            TargetSession.SendData(MessengerImMessageComposer.Compose(Session.CharacterId, Text));
+            TargetSession.SendData(MessengerImMessageComposer.Compose(Session.CharacterId, Wordfilter.Filter(Text)));
+
+            using (SqlDatabaseClient MySqlClient = SqlDatabaseManager.GetClient())
+            {
+                ModerationLogs.LogChatMessage(MySqlClient, Session.CharacterId, 0, "(MESSAGE to " + TargetSession.CharacterInfo.Username + " [" + TargetSession.CharacterId+ "]) " + Text);
+            }
         }
 
         private static void OnFriendRequest(Session Session, ClientMessage Message)
@@ -394,7 +400,7 @@ namespace Snowlight.Game.Messenger
 
             Session BuddySession = SessionManager.GetSessionByCharacterId(BuddyId);
 
-            if (BuddySession == null || !BuddySession.InRoom)
+            if (BuddySession == null || !BuddySession.InRoom || BuddySession.AbsoluteRoomId == Session.AbsoluteRoomId)
             {
                 return;
             }
@@ -424,6 +430,8 @@ namespace Snowlight.Game.Messenger
                 MessageText = MessageText.Substring(0, 121);
             }
 
+            List<Session> Users = new List<Session>();
+
             foreach (uint UserId in Targets)
             {
                 if (!Session.MessengerFriendCache.Friends.Contains(UserId))
@@ -438,7 +446,20 @@ namespace Snowlight.Game.Messenger
                     continue;
                 }
 
-                TargetSession.SendData(MessengerImInviteComposer.Compose(Session.CharacterId, MessageText));
+                Users.Add(TargetSession);
+
+                TargetSession.SendData(MessengerImInviteComposer.Compose(Session.CharacterId, Wordfilter.Filter(MessageText)));
+            }
+
+            using (SqlDatabaseClient MySqlClient = SqlDatabaseManager.GetClient())
+            {
+                String to = "";
+                foreach (Session User in Users)
+                {
+                    to += User.CharacterInfo.Username + " [" + User.CharacterId + "], ";
+                }
+                to = to.Substring(0, to.Length - 2);
+                ModerationLogs.LogChatMessage(MySqlClient, Session.CharacterId, 0, "(INVITATION to " + to + ") " + MessageText);
             }
         }
 

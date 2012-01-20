@@ -70,7 +70,6 @@ namespace Snowlight.Game.Pets
                     return mRaces[PetType];
                 }
             }
-
             return new List<PetRaceData>();
         }
 

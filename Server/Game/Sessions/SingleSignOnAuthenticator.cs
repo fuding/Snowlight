@@ -125,8 +125,9 @@ namespace Snowlight.Game.Sessions
                 }
 
                 // Mark as a successful login and continue
-                Output.WriteLine("User " + LogName + " (ID " + UserId + ") has logged in from " + RemoteAddress + ".");
 
+                Output.WriteLine("User " + LogName + " (ID " + UserId + ") has logged in from " + RemoteAddress + ".");
+                MySqlClient.ExecuteNonQuery("UPDATE characters SET online = '1' WHERE id = " + UserId + " LIMIT 1");
                 mSuccessfulLoginCount++;
                 return UserId;
             }

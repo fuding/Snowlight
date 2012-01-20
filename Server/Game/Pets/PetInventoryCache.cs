@@ -96,5 +96,19 @@ namespace Snowlight.Game.Items
 
             return null;
         }
+
+        public void ClearAndDeleteAll()
+        {
+            lock (mInner)
+            {
+                mInner.Clear();
+
+                using (SqlDatabaseClient MySqlClient = SqlDatabaseManager.GetClient())
+                {
+                    MySqlClient.SetParameter("userid", mCharacterId);
+                    MySqlClient.ExecuteNonQuery("DELETE FROM pets WHERE user_id = @userid AND room_id = 0");
+                }
+            }
+        }
     }
 }

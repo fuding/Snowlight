@@ -19,6 +19,9 @@ using Snowlight.Game.Items;
 using Snowlight.Game.Moderation;
 using Snowlight.Game.Achievements;
 using Snowlight.Communication.Incoming;
+using Snowlight.Game.Misc.Chat;
+using Snowlight.Game.Items.DefaultBehaviorHandlers;
+using Snowlight.Game.Items.Wired;
 
 namespace Snowlight.Game.Rooms
 {
@@ -91,6 +94,8 @@ namespace Snowlight.Game.Rooms
             DataRouter.RegisterHandler(OpcodesIn.ITEM_ACTIVATE_LOVE_SHUFFLER, new ProcessRequestCallback(ActivateGeneric));
             DataRouter.RegisterHandler(OpcodesIn.ITEM_ACTIVATE_ONE_WAY_GATE, new ProcessRequestCallback(ActivateGeneric));
             DataRouter.RegisterHandler(OpcodesIn.SYNC_MUSIC, new ProcessRequestCallback(SyncSoundManager));
+            DataRouter.RegisterHandler(OpcodesIn.WIRED_TRIGGER_SAVE, new ProcessRequestCallback(WiredSave));
+            DataRouter.RegisterHandler(OpcodesIn.WIRED_EFFECT_SAVE, new ProcessRequestCallback(WiredSave));
         }
 
         private static void CheckCanCreateRoom(Session Session, ClientMessage Message)
@@ -134,7 +139,7 @@ namespace Snowlight.Game.Rooms
             }
 
             ServerMessage PubRoomData = new ServerMessage(OpcodesOut.ROOM_PUBLIC_MODELDATA);
-            PubRoomData.AppendUInt32(27); // Unknown.
+            PubRoomData.AppendUInt32(RoomId); // Unknown.
             PubRoomData.AppendStringWithBreak(Info.SWFs);
             PubRoomData.AppendUInt32(Info.Id);
             Session.SendData(PubRoomData);
@@ -536,11 +541,19 @@ namespace Snowlight.Game.Rooms
                 MessageText = MessageText.Substring(0, 100);
             }
 
+            MessageText = Wordfilter.Filter(MessageText);
+
             if (MessageText.StartsWith(":") && (ChatCommands.HandleCommand(Session, MessageText) ||
                 Session.HasRight("moderation_tool")))
             {
                 return;
-            }         
+            }
+
+            if (Instance.WiredManager.HandleChat(MessageText, Actor))
+            {
+                Actor.Whisper(MessageText, 0);
+                return;
+            }
 
             Actor.Chat(MessageText, Shout, Session.HasRight("mute"));
 
@@ -644,7 +657,8 @@ namespace Snowlight.Game.Rooms
                 return;
             }
 
-            int NewRotation = Rotation.Calculate(Actor.Position.GetVector2(), PositionToFace);
+            int NewRotation = 0;
+            NewRotation = Rotation.Calculate(Actor.Position.GetVector2(), PositionToFace);
 
             if (Actor.BodyRotation != NewRotation)
             {
@@ -1317,6 +1331,16 @@ namespace Snowlight.Game.Rooms
                 Session.SendData(MusicPlayingComposer.Compose(Instance.MusicController.CurrentSong.SongData.Id,
                     Instance.MusicController.SongQueuePosition, Instance.MusicController.SongSyncTimestamp));
             }
+        }
+
+        private static void WiredSave(Session Session, ClientMessage Message)
+        {
+            RoomInstance Instance = RoomManager.GetInstanceByRoomId(Session.CurrentRoomId);
+            if (Instance == null)
+            {
+                return;
+            }
+            Instance.WiredManager.HandleSave(Session, Message);
         }
     }
 }

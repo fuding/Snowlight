@@ -26,6 +26,7 @@ namespace Snowlight.Game.Pets
         private int mEnergy;
         private int mHappiness;
         private int mScore;
+        private String mColor;
 
         public uint Id
         {
@@ -47,7 +48,7 @@ namespace Snowlight.Game.Pets
         {
             get
             {
-                return mType + " " + mRace + " " + "ffffff";
+                return mType + " " + mRace + " " + mColor;
             }
         }
 
@@ -127,7 +128,7 @@ namespace Snowlight.Game.Pets
         {
             get
             {
-                return "ffffff";
+                return mColor;
             }
         }
 
@@ -251,7 +252,7 @@ namespace Snowlight.Game.Pets
         }
         
         public Pet(uint Id, string Name, int PetType, int Race, uint UserId, uint RoomId, Vector3 RoomPosition,
-            double Timestamp, int Experience, int Energy, int Happiness, int Score)
+            double Timestamp, int Experience, int Energy, int Happiness, int Score, String color)
         {
             mId = Id;
             mName = Name;
@@ -265,6 +266,7 @@ namespace Snowlight.Game.Pets
             mEnergy = Energy;
             mHappiness = Happiness;
             mScore = Score;
+            mColor = color;
         }
 
         public void MoveToUserInventory(uint UserId)

@@ -94,8 +94,9 @@ namespace Snowlight.Game.Characters
 
         public static CharacterInfo GenerateCharacterInfoFromRow(SqlDatabaseClient MySqlClient, uint LinkedClientId, DataRow Row)
         {
-            return new CharacterInfo(MySqlClient, LinkedClientId, (uint)Row["id"], (string)Row["username"], (string)Row["real_name"],
-                (string)Row["figure"], (Row["gender"].ToString() == "M" ? CharacterGender.Male : CharacterGender.Female),
+            return new CharacterInfo(MySqlClient, LinkedClientId, (uint)Row["id"], (string)Row["username"], (uint)Row["rank"],
+                (bool)Row["premium"], (string)Row["real_name"], (string)Row["figure"],
+                (Row["gender"].ToString() == "M" ? CharacterGender.Male : CharacterGender.Female),
                 (string)Row["motto"], (int)Row["credits_balance"], (int)Row["activity_points_balance"],
                 (double)Row["activity_points_last_update"], (Row["privacy_accept_friends"].ToString() == "1"),
                 (uint)Row["home_room"], (int)Row["score"], (int)Row["config_volume"],
@@ -107,8 +108,9 @@ namespace Snowlight.Game.Characters
 
         public static CharacterInfo GenerateNullCharacter(uint Id)
         {
-            return new CharacterInfo(null, 0, Id, "Unknown", string.Empty, string.Empty, CharacterGender.Male, string.Empty,
+            return new CharacterInfo(null, 0, Id, "Unknown", 0, false, string.Empty, string.Empty, CharacterGender.Male, string.Empty,
                 0, 0, 0, false, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         }
+    
     }
 }

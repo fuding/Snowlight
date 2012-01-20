@@ -15,6 +15,7 @@ namespace Snowlight.Communication.Outgoing
 
             foreach (CatalogPage Page in Pages.Values)
             {
+              
                 if (Page.ParentId != -1 || (Page.RequiredRight.Length > 0 && !Session.HasRight(Page.RequiredRight)))
                 {
                     continue;

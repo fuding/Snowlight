@@ -277,7 +277,7 @@ namespace Snowlight.Game.Sessions
             lock (mSyncRoot)
             {
                 uint Id = mCounter++;
-                mSessions.Add(Id, new Session(Id, IncomingSocket));
+                mSessions.Add(Id, new Session(Id, IncomingSocket)); 
             }
         }
     }

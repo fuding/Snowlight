@@ -10,6 +10,7 @@ using Snowlight.Game.Items;
 using Snowlight.Game.Pathfinding;
 using Snowlight.Game.Bots;
 using Snowlight.Game.Achievements;
+using Snowlight.Config;
 
 namespace Snowlight.Game.Rooms
 {
@@ -146,7 +147,14 @@ namespace Snowlight.Game.Rooms
                         }
 
                         // Update rotation
-                        Actor.BodyRotation = Rotation.Calculate(Actor.Position.GetVector2(), NextStep);
+                        if (Actor.WalkingBackwards)
+                        {
+                            Actor.BodyRotation = Rotation.CalculateBackwards(Actor.Position.GetVector2(), NextStep);
+                        }
+                        else
+                        {
+                            Actor.BodyRotation = Rotation.Calculate(Actor.Position.GetVector2(), NextStep);
+                        }
                         Actor.HeadRotation = Actor.BodyRotation;
 
                         // Request update for next @B cycle
@@ -155,14 +163,23 @@ namespace Snowlight.Game.Rooms
                     else
                     {
                         // Invalid step: tell pathfinder to stop and mark current position on temporary grid
-                        Actor.StopMoving();
+                        Vector2 target = Actor.Pathfinder.Target;
 
+                        Actor.StopMoving();
                         if (NewUserGrid[NextStep.X, NextStep.Y] == null)
                         {
                             NewUserGrid[NextStep.X, NextStep.Y] = new List<RoomActor>();
                         }
 
                         NewUserGrid[NextStep.X, NextStep.Y].Add(Actor);
+                        if (ConfigManager.GetValue("pathfinder.mode").ToString().ToLower() == "simple_redirect")
+                        {
+                            Actor.MoveTo(new Vector2(NextStep.X - 1, NextStep.Y)); // Redirect???
+                            while (Actor.IsMoving)
+                            {
+                            }
+                            Actor.MoveTo(target);
+                        }
                     }
                 }
                 else

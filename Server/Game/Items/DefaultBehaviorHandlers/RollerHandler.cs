@@ -6,6 +6,7 @@ using Snowlight.Game.Sessions;
 using Snowlight.Game.Rooms;
 using Snowlight.Communication.Outgoing;
 using Snowlight.Specialized;
+using System.Collections.ObjectModel;
 
 namespace Snowlight.Game.Items.DefaultBehaviorHandlers
 {
@@ -24,6 +25,7 @@ namespace Snowlight.Game.Items.DefaultBehaviorHandlers
 
                     List<RoomActor> ActorsToMove = Instance.GetActorsOnPosition(Item.RoomPosition.GetVector2());
                     List<Item> ItemsToMove = new List<Item>();
+                    ItemsToMove.AddRange(Instance.GetItemsOnPosition(Item.RoomPosition.GetVector2()));
 
                     if (ActorsToMove != null)
                     {
@@ -43,6 +45,37 @@ namespace Snowlight.Game.Items.DefaultBehaviorHandlers
                             }
                         }
                     }
+                    if (ItemsToMove.Count != 0)
+                    {
+                        foreach (Item item in ItemsToMove)
+                        {
+                            if (item == Item)
+                            {
+                                continue;
+                            }
+
+                            if (Item.RoomPosition.X == item.RoomPosition.X && Item.RoomPosition.Y == item.RoomPosition.Y)
+                            {
+                                Vector2 NewPosition = new Vector2(Item.SquareInFront.X, Item.SquareInFront.Y);
+                                int NewRotation = item.RoomRotation;
+                                Vector3 FinalizedPosition = Instance.SetFloorItem(Session, item, NewPosition, NewRotation);
+                                Vector3 oldpos = item.RoomPosition;
+
+                                if (FinalizedPosition != null)
+                                {
+                                    item.MoveToRoom(null, Instance.RoomId, FinalizedPosition, NewRotation, string.Empty);
+                                    RoomManager.MarkWriteback(item, false);
+
+                                    Instance.RegenerateRelativeHeightmap();
+                                    Instance.BroadcastMessage(RoomItemUpdatedComposer.Compose(item));
+
+                                    ItemEventDispatcher.InvokeItemEventHandler(Session, item, Instance, ItemEventType.Moved, 0);
+                                    Instance.BroadcastMessage(RollerEventComposer.Compose(oldpos, FinalizedPosition, Item.Id, 0, item.Id));
+                                }
+                            }
+                        }
+                    }
+                        
 
                     goto case ItemEventType.InstanceLoaded;
 
@@ -51,7 +84,7 @@ namespace Snowlight.Game.Items.DefaultBehaviorHandlers
 
                     Item.RequestUpdate(4);
                     break;
-            }
+                    }
 
             return true;
         }

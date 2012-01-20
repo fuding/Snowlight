@@ -239,6 +239,7 @@
     <Compile Include="Communication\Outgoing\Rooms\TradeOffersComposer.cs" />
     <Compile Include="Communication\Outgoing\User\ActivityPointsBalanceComposer.cs" />
     <Compile Include="Communication\Outgoing\Handshake\AuthenticationOkComposer.cs" />
+    <Compile Include="Communication\Outgoing\User\NameTaken.cs" />
     <Compile Include="Communication\Outgoing\User\SoundSettingsComposer.cs" />
     <Compile Include="Communication\Outgoing\User\CreditsBalanceComposer.cs" />
     <Compile Include="Communication\Outgoing\User\FuseRightsListComposer.cs" />
@@ -310,6 +311,7 @@
     <Compile Include="Game\Items\DefaultBehaviorHandlers\RollerHandler.cs" />
     <Compile Include="Game\Items\DefaultBehaviorHandlers\TeleporterHandler.cs" />
     <Compile Include="Game\Items\DefaultBehaviorHandlers\TimedFurnitureHandler.cs" />
+    <Compile Include="Game\Items\DefaultBehaviorHandlers\WiredHandler.cs" />
     <Compile Include="Game\Items\InventoryCache.cs" />
     <Compile Include="Game\Items\Item.cs" />
     <Compile Include="Game\Items\ItemBehavior.cs" />
@@ -317,7 +319,10 @@
     <Compile Include="Game\Items\ItemDefinitionManager.cs" />
     <Compile Include="Game\Items\ItemEventDispatcher.cs" />
     <Compile Include="Game\Items\ItemFactory.cs" />
+    <Compile Include="Game\Items\Wired\WiredActions.cs" />
+    <Compile Include="Game\Items\Wired\WiredData.cs" />
     <Compile Include="Game\Items\StaticObject.cs" />
+    <Compile Include="Game\Items\Wired\WiredManager.cs" />
     <Compile Include="Game\Messenger\MessengerHandler.cs" />
     <Compile Include="Game\Messenger\SessionMessengerCache.cs" />
     <Compile Include="Game\Misc\ActivityPointsWorker.cs" />
@@ -327,6 +332,7 @@
     <Compile Include="Game\Misc\Caches\UserIgnoreCache.cs" />
     <Compile Include="Game\Misc\Chat\ChatCommands.cs" />
     <Compile Include="Game\Misc\Chat\ChatEmotions.cs" />
+    <Compile Include="Game\Misc\Chat\Wordfilter.cs" />
     <Compile Include="Game\Misc\CrossdomainPolicy.cs" />
     <Compile Include="Game\Misc\Distance.cs" />
     <Compile Include="Game\Misc\DrinkSet.cs" />
@@ -396,6 +402,7 @@
     <Compile Include="Game\Sessions\Session.cs" />
     <Compile Include="Game\Sessions\SessionManager.cs" />
     <Compile Include="Input.cs" />
+    <Compile Include="Network\CommandListener.cs" />
     <Compile Include="Network\SnowTcpListener.cs" />
     <Compile Include="Output.cs" />
     <Compile Include="Program.cs" />
@@ -404,8 +411,8 @@
     <Compile Include="Util\RandomGenerator.cs" />
     <Compile Include="Specialized\Vector2.cs" />
     <Compile Include="Specialized\Vector3.cs" />
-    <Compile Include="Storage\SqlDatabaseClient.cs" />
-    <Compile Include="Storage\SqlDatabaseManager.cs" />
+    <Compile Include="Util\Storage\SqlDatabaseClient.cs" />
+    <Compile Include="Util\Storage\SqlDatabaseManager.cs" />
     <Compile Include="UnixTimestamp.cs" />
     <Compile Include="Util\Base64Encoding.cs" />
     <Compile Include="Util\Statistics.cs" />

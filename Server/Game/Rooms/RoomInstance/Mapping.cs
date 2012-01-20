@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using Snowlight.Specialized;
 using Snowlight.Game.Items;
 using Snowlight.Communication.Outgoing;
+using Snowlight.Config;
 
 namespace Snowlight.Game.Rooms
 {
@@ -77,11 +78,11 @@ namespace Snowlight.Game.Rooms
                 ActorBlockGrid = mUserGrid;
             }
 
+
             if (!IsValidPosition(To) || mTileStates[To.X, To.Y] == TileState.Blocked || ((!Info.DisableRoomBlocking ||
-                EndOfPath) && ActorBlockGrid[To.X, To.Y] != null) || mUserMovementNodes[To.X, To.Y] == UserMovementNode.Blocked ||
-                (mUserMovementNodes[To.X, To.Y] == UserMovementNode.WalkableEndOfRoute && !EndOfPath))
+                EndOfPath) && ActorBlockGrid[To.X, To.Y] != null) || mUserMovementNodes[To.X, To.Y] == UserMovementNode.Blocked || (mUserMovementNodes[To.X, To.Y] == UserMovementNode.WalkableEndOfRoute && !EndOfPath) && ConfigManager.GetValue("pathfinder.mode").ToString().ToLower() != "simple")
             {
-                return false;
+                return false; // Walking throught furniture forbidden TODO: Redirect!
             }
 
             double HeightDiff = GetUserStepHeight(To) - GetUserStepHeight(From);

@@ -108,7 +108,7 @@ namespace Snowlight.Game.Bots
 
                 int PetHandler = (int)Row["pet_type_handler_id"];
 
-                if (PetHandler > 0)
+                if ((string)Row["ai_type"] == "pet")
                 {
                     mPetHandlerIndex.Add(PetHandler, Bot);
                 }

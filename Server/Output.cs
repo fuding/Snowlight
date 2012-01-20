@@ -32,7 +32,7 @@ namespace Snowlight
             if (EnableLogging)
             {
                 DateTime Now = DateTime.Now;
-                string LogDirectory = Environment.CurrentDirectory + Constants.LogFileDirectory + "\\";
+                string LogDirectory = Constants.LogFileDirectory + "\\";
                 mLogFilePath = LogDirectory + Now.Day + Now.Month + Now.Year + Now.Hour + Now.Minute + Now.Second + ".log";
 
                 try
@@ -45,8 +45,10 @@ namespace Snowlight
                     File.WriteAllText(mLogFilePath, ComposeDefaultLogHeader(), Constants.DefaultEncoding);
                 }
                 catch (Exception)
-                {
+                {                
                     mEnableLogging = false;
+                    WriteLine("LOGGING DISABLED" + mLogFilePath);
+                    Console.ReadKey();
                 }
             }
 

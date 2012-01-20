@@ -502,7 +502,7 @@ namespace Snowlight.Game.Rooms
         }
 
         private static void PlacePet(Session Session, ClientMessage Message)
-        {
+        {          
             RoomInstance Instance = RoomManager.GetInstanceByRoomId(Session.CurrentRoomId);
 
             if (Instance == null || (!Instance.CheckUserRights(Session, true) && !Instance.Info.AllowPets))
@@ -515,7 +515,7 @@ namespace Snowlight.Game.Rooms
             if (Pet == null)
             {
                 return;
-            }
+            } 
 
             Vector2 DesiredPosition = new Vector2(Message.PopWiredInt32(), Message.PopWiredInt32());
 
@@ -523,7 +523,7 @@ namespace Snowlight.Game.Rooms
             {
                 return;
             }
-
+           
             Bot BotDefinition = BotManager.GetHandlerDefinitionForPetType(Pet.Type);
 
             if (BotDefinition == null)
@@ -554,7 +554,7 @@ namespace Snowlight.Game.Rooms
         private static void GetPetInfo(Session Session, ClientMessage Message)
         {
             RoomInstance Instance = RoomManager.GetInstanceByRoomId(Session.CurrentRoomId);
-
+          
             if (Instance == null)
             {
                 return;
@@ -567,9 +567,9 @@ namespace Snowlight.Game.Rooms
             {
                 return;
             }
-
+      
             Pet PetData = ((Bot)Actor.ReferenceObject).PetData;
-
+            
             if (PetData == null)
             {
                 return;

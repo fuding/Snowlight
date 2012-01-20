@@ -6,6 +6,7 @@ using Snowlight.Specialized;
 using Snowlight.Game.Rooms;
 using Snowlight.Communication.Outgoing;
 using System.Collections.Generic;
+using Snowlight.Game.Items.Wired;
 
 namespace Snowlight.Game.Items
 {
@@ -29,6 +30,8 @@ namespace Snowlight.Game.Items
         private uint mSoundManagerId;
         private int mSoundManagerOrder;
         private double mExpireTimestamp;
+        private WiredData mWiredData;
+        private WiredManager mWiredManager;
 
         public uint Id
         {
@@ -280,8 +283,32 @@ namespace Snowlight.Game.Items
             }
         }
 
+        public WiredData WiredData
+        {
+            get
+            {
+                return mWiredData;
+            }
+            set
+            {
+                mWiredData = value;
+            }
+        }
+
+        public WiredManager WiredManager
+        {
+            get
+            {
+                return mWiredManager;
+            }
+            set
+            {
+                mWiredManager = value;
+            }
+        }
+
         public Item(uint Id, uint DefinitionId, uint UserId, uint RoomId, Vector3 RoomPos, string RoomWallPos, int Rotation,
-            string Flags, string DisplayFlags, bool Untradable, uint SoundManagerId, int SoundManagerOrder, double ExpireTimestamp)
+            string Flags, string DisplayFlags, bool Untradable, uint SoundManagerId, int SoundManagerOrder, double ExpireTimestamp, WiredManager WiredManager)
         {
             mId = Id;
             mDefinitionId = DefinitionId;
@@ -299,6 +326,16 @@ namespace Snowlight.Game.Items
             mSoundManagerId = SoundManagerId;
             mSoundManagerOrder = SoundManagerOrder;
             mExpireTimestamp = ExpireTimestamp;
+            mWiredManager = WiredManager;
+
+            if (mCachedDefinition.Behavior == ItemBehavior.WiredCondition || mCachedDefinition.Behavior == ItemBehavior.WiredTrigger || mCachedDefinition.Behavior == ItemBehavior.WiredEffect)
+            {              
+                if (mWiredManager == null)
+                {
+                    return;
+                }
+                mWiredData = mWiredManager.LoadWired(Id, mCachedDefinition.BehaviorData);
+            }
         }
 
         public void Update(RoomInstance Instance)
@@ -327,9 +364,9 @@ namespace Snowlight.Game.Items
             mRoomId = 0;
             mRoomPos = new Vector3(0, 0, 0);
             mRoomWallPos = string.Empty;
-            mRoomRot = 0;
+            mRoomRot = 0; 
             mSoundManagerId = 0;
-            mSoundManagerOrder = 0;
+            mSoundManagerOrder = 0;     
 
             if (MySqlClient != null)
             {
@@ -410,7 +447,8 @@ namespace Snowlight.Game.Items
         public void RemovePermanently(SqlDatabaseClient MySqlClient)
         {
             MySqlClient.SetParameter("id", mId);
-            MySqlClient.ExecuteNonQuery("DELETE FROM items WHERE id = @id LIMIT 1");       
+            MySqlClient.ExecuteNonQuery("DELETE FROM items WHERE id = @id LIMIT 1");
+            mWiredManager.RemoveWired(mId, MySqlClient);
         }
     }
 }

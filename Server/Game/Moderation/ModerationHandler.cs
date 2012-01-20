@@ -201,8 +201,9 @@ namespace Snowlight.Game.Moderation
 
         private static void GetRoomChatlog(Session Session, ClientMessage Message)
         {
-            if (!Session.HasRight("moderation_tool"))
+            if (!Session.HasRight("chatlogs"))
             {
+                Session.SendData(NotificationMessageComposer.Compose("You are not allowed to use this!"));
                 return;
             }
 
@@ -223,8 +224,9 @@ namespace Snowlight.Game.Moderation
 
         private static void GetUserChatlog(Session Session, ClientMessage Message)
         {
-            if (!Session.HasRight("moderation_tool"))
+            if (!Session.HasRight("chatlogs"))
             {
+                Session.SendData(NotificationMessageComposer.Compose("You are not allowed to use this!"));
                 return;
             }
 
@@ -236,8 +238,9 @@ namespace Snowlight.Game.Moderation
 
         private static void GetTicketChatlog(Session Session, ClientMessage Message)
         {
-            if (!Session.HasRight("moderation_tool"))
+            if (!Session.HasRight("chatlogs"))
             {
+                Session.SendData(NotificationMessageComposer.Compose("You are not allowed to use this!"));
                 return;
             }
 
@@ -328,6 +331,12 @@ namespace Snowlight.Game.Moderation
                 ModerationLogs.LogModerationAction(MySqlClient, Session, "Sent caution to user",
                     "User " + TargetSession.CharacterInfo.Username + " (ID " + TargetSession.CharacterId + "): '" +
                     MessageText + "'.");
+
+                MySqlClient.SetParameter("userid", TargetSession.CharacterInfo.Id);
+                MySqlClient.SetParameter("modid", Session.CharacterId);
+                MySqlClient.SetParameter("timestamp", UnixTimestamp.GetCurrent());
+                MySqlClient.SetParameter("value", MessageText);
+                MySqlClient.ExecuteNonQuery("INSERT INTO user_cautions (moderator_id,user_id,value,timestamp) VALUES (@modid,@userid,@value,@timestamp)");
             }
         }
 

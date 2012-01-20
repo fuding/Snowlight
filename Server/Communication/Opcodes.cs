@@ -173,7 +173,7 @@ namespace Snowlight.Communication
         public const uint FIREWORKS_CHARGE_INFO = 629;
         public const uint WIRED_FURNI_TRIGGER = 650;
         public const uint WIRED_FURNI_ACTION = 651;
-        public const uint WIRED_FURNI_CONDITION = 652;
+        public const uint WIRED_FURNI_CONDITION = 652;       
         public const uint QUEST_LIST = 800;
         public const uint QUEST_COMPLETED = 801;
         public const uint QUEST_STARTED = 802;
@@ -186,6 +186,7 @@ namespace Snowlight.Communication
         public const uint MESSENGER_FRIEND_EVENT = 833;
         public const uint ACHIEVEMENTS_PROGRESS_UPDATE = 913;
         public const uint GET_STREAM_EVENT = 950;
+        public const uint OPEN_NEWS = 8733;
     }
 
     public static class OpcodesIn
@@ -370,5 +371,8 @@ namespace Snowlight.Communication
         public const uint QUESTS_GET_CURRENT = 3107;
         public const uint USER_INVENTORY_MARK_TAB_READ = 3111;
         public const uint ROOM_ITEM_PLACE_STICKY = 3254;
+        public const uint CHECK_USERNAME = 471;
+        public const uint WIRED_TRIGGER_SAVE = 3050;
+        public const uint WIRED_EFFECT_SAVE = 3051;
     }
 }

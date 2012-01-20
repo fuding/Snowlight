@@ -66,10 +66,11 @@ namespace Snowlight.Communication.Outgoing
 
                 Message.AppendStringWithBreak("/link_to.php?url=" + HttpUtility.UrlEncode(Url) + "&hash=xx");
                 Message.AppendStringWithBreak(LinkedRef.Value);
-                Message.AppendBoolean(true); // Trusted URL (instaopen)
+                Message.AppendBoolean(false); // Trusted URL (instaopen)
             }
 
             Message.AppendInt32(0); // No idea
+            Message.AppendBoolean(true);
             return Message;
         }
     }

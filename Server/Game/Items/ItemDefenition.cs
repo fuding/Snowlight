@@ -107,9 +107,9 @@ namespace Snowlight.Game.Items
 
                         return "h";
 
-                    /*case ItemType.Pet:
+                    case ItemType.Pet:
 
-                        return "p";*/
+                        return "p";
                 }
             }
         }

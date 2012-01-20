@@ -145,7 +145,7 @@ namespace Snowlight.Game.Catalog
         }
 
         public CatalogItem GetItem(uint ItemId)
-        {
+        {  
             foreach (CatalogItem Item in mItems)
             {
                 if (Item.Id == ItemId)

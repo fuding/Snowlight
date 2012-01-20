@@ -2,6 +2,7 @@
 
 using Snowlight.Specialized;
 using Snowlight.Game.Rooms;
+using Snowlight.Config;
 
 namespace Snowlight.Game.Pathfinding
 {

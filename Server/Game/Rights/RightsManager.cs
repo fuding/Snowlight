@@ -3,50 +3,65 @@ using System.Collections.Generic;
 using System.Data;
 
 using Snowlight.Storage;
+using Snowlight.Game.Sessions;
 
 namespace Snowlight.Game.Rights
 {
     public static class RightsManager
     {
-        private static Dictionary<uint, Badge> mBadges;
+        private static Dictionary<uint, List<int>> mRights;
+        private static Dictionary<uint, String> mRightsBages;
         private static Dictionary<uint, List<string>> mRightSets;
 
         public static void Initialize(SqlDatabaseClient MySqlClient)
         {
-            mBadges = new Dictionary<uint, Badge>();
-            mRightSets = new Dictionary<uint,List<string>>();
+            mRights = new Dictionary<uint, List<int>>();
+            mRightSets = new Dictionary<uint, List<string>>();
+            mRightsBages = new Dictionary<uint, String>();
 
             RebuildCache(MySqlClient);
         }
 
         public static void RebuildCache(SqlDatabaseClient MySqlClient)
         {
-            lock (mBadges)
+            lock (mRights)
             {
-                mBadges.Clear();
+                mRights.Clear();
                 mRightSets.Clear();
+                mRightsBages.Clear();
 
-                DataTable BadgeTable = MySqlClient.ExecuteQueryTable("SELECT id,code,rights_sets FROM badge_definitions");
+                DataTable RankTable = MySqlClient.ExecuteQueryTable("SELECT rank_id,rights_sets,badge_code FROM ranks");
                 DataTable RightsTable = MySqlClient.ExecuteQueryTable("SELECT set_id,right_id FROM rights");
 
-                foreach (DataRow Row in BadgeTable.Rows)
+                foreach (DataRow Row in RankTable.Rows)
                 {
                     List<uint> Sets = new List<uint>();
                     string[] SetBits = ((string)Row["rights_sets"]).Split(',');
+                    
+
+                    uint rank = (uint)Row["rank_id"];
+
+                    if (!mRights.ContainsKey(rank))
+                    {
+                        mRights.Add(rank, new List<int>());
+                    }
+
+                    if (!mRightsBages.ContainsKey(rank))
+                    {
+                        mRightsBages.Add(rank, (String)Row["badge_code"]);
+                    }
 
                     foreach (string SetBit in SetBits)
                     {
-                        uint Set = 0;
+                        int Set = 0;
 
-                        uint.TryParse(SetBit, out Set);
+                        int.TryParse(SetBit, out Set);
 
                         if (Set > 0)
                         {
-                            Sets.Add(Set);
+                            mRights[rank].Add(Set);
                         }
                     }
-
-                    mBadges.Add((uint)Row["id"], new Badge((uint)Row["id"], (string)Row["code"], Sets));
                 }
 
                 foreach (DataRow Row in RightsTable.Rows)
@@ -63,53 +78,67 @@ namespace Snowlight.Game.Rights
             }
         }
 
-        public static List<string> GetDefaultRights()
+        public static void CleanBadges(uint Rank, Session Session)
         {
-            List<string> Rights = new List<string>();
+            Boolean changed = false;
 
-            if (mRightSets.ContainsKey(0))
+            foreach (String badge in mRightsBages.Values)
             {
-                foreach (string Right in mRightSets[0])
+                if (mRightsBages.ContainsValue(badge) && !mRightsBages.ContainsKey(Rank) || mRightsBages[Rank] != badge)
                 {
-                    if (Rights.Contains(Right))
-                    {
-                        continue;
-                    }
+                    Session.BadgeCache.RemoveBadge(badge);
+                    changed = true;
+                }
 
-                    Rights.Add(Right);
+                if (mRightsBages.ContainsKey(Rank) && mRightsBages[Rank] == badge && !Session.BadgeCache.ContainsCode(badge))
+                {
+                    Session.BadgeCache.AddBadge(badge);
+                    changed = true;
                 }
             }
 
-            return Rights;
-        }
-
-        public static Badge GetBadgeById(uint Id)
-        {
-            return (mBadges.ContainsKey(Id) ? mBadges[Id] : null);
-        }
-
-        public static Badge GetBadgeByCode(string BadgeCode)
-        {
-            foreach (Badge Badge in mBadges.Values)
+            if (changed)
             {
-                if (Badge.Code == BadgeCode)
+                using (SqlDatabaseClient MySqlClient = SqlDatabaseManager.GetClient())
                 {
-                    return Badge;
+                    Session.BadgeCache.ReloadCache(MySqlClient, Session.AchievementCache);
                 }
             }
-
-            return null;
         }
 
-        public static List<string> GetRightsForBadge(Badge Badge)
+        public static List<string> GetRightsForRank(uint Rank, ClubSubscriptionLevel level, bool IsPremium)
         {
             List<string> Rights = new List<string>();
 
-            foreach (uint SetId in Badge.RightsSets)
+            if (level == ClubSubscriptionLevel.BasicClub)
             {
-                if (SetId > 0 && mRightSets.ContainsKey(SetId))
+                Rights.Add("club_regular");
+            }
+
+            if (level == ClubSubscriptionLevel.VipClub)
+            {
+                Rights.Add("club_vip");
+            }
+
+            if (IsPremium)
+            {
+                Rights.Add("club_premium");
+            }
+
+            foreach (String Right in mRightSets[0])
+            {
+                if (Rights.Contains(Right))
                 {
-                    foreach (string Right in mRightSets[SetId])
+                    continue;
+                }
+                Rights.Add(Right);
+            }
+
+            foreach (uint set in mRights[Rank])
+            {
+                if (mRightSets.ContainsKey(set))
+                {
+                    foreach (string Right in mRightSets[set])
                     {
                         if (Rights.Contains(Right))
                         {
@@ -120,7 +149,7 @@ namespace Snowlight.Game.Rights
                     }
                 }
             }
-
+            
             return Rights;
         }
     }

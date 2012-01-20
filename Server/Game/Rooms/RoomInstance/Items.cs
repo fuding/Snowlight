@@ -8,6 +8,7 @@ using Snowlight.Game.Items;
 using Snowlight.Communication.Outgoing;
 using Snowlight.Game.Sessions;
 using Snowlight.Config;
+using Snowlight.Storage;
 
 namespace Snowlight.Game.Rooms
 {
@@ -479,6 +480,11 @@ namespace Snowlight.Game.Rooms
                 if (Item == null)
                 {
                     return false;
+                }
+
+                using (SqlDatabaseClient MySqlClient = SqlDatabaseManager.GetClient())
+                {
+                    WiredManager.RemoveWired(Item.Id, MySqlClient);
                 }
 
                 mItems.Remove(ItemId);

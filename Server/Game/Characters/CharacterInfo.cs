@@ -24,6 +24,8 @@ namespace Snowlight.Game.Characters
         private uint mId;
         private uint mSessionId;
         private string mUsername;
+        private uint mRank;
+        private bool mPremium;
         private string mRealName;
         private string mFigure;
         private CharacterGender mGender;
@@ -69,6 +71,27 @@ namespace Snowlight.Game.Characters
             get
             {
                 return mSessionId;
+            }
+        }
+
+        public uint Rank
+        {
+            get
+            {
+                return mRank;
+            }
+        }
+
+        public bool IsPremium
+        {
+            get
+            {
+                return mPremium;
+            }
+
+            set
+            {
+                mPremium = value;
             }
         }
 
@@ -389,7 +412,7 @@ namespace Snowlight.Game.Characters
             }
         }
 
-        public CharacterInfo(SqlDatabaseClient MySqlClient, uint SessionId, uint Id, string Username, string RealName, string Figure, 
+        public CharacterInfo(SqlDatabaseClient MySqlClient, uint SessionId, uint Id, string Username, uint Rank, bool Premium, string RealName, string Figure, 
             CharacterGender Gender, string Motto, int Credits, int ActivityPoints, double ActivityPointsLastUpdate,
             bool PrivacyAcceptFriends, uint HomeRoom, int Score, int ConfigVolume, int ModerationTickets,
             int ModerationTicketsAbusive, double ModerationTicketCooldown, int ModerationBans, int ModerationCautions,
@@ -399,6 +422,8 @@ namespace Snowlight.Game.Characters
             mSessionId = SessionId;
             mId = Id;
             mUsername = Username;
+            mRank = Rank;
+            mPremium = Premium;
             mRealName = RealName;
             mFigure = Figure;
             mGender = Gender;

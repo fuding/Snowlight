@@ -55,8 +55,6 @@ namespace Snowlight.Game.Handlers
 
         private static void OnDebugEvent(Session Session, ClientMessage Message)
         {
-            // Debug events are sometimes sent when a user clicks an element
-            // This information is completely useless to us (+bandwith waste), so we're ignoring it for now
         }
 
         private static void OnClientConfig(Session Session, ClientMessage Message)

@@ -2,6 +2,8 @@
 
 namespace Snowlight.Game.Items
 {
+
+
     public enum ItemBehavior
     {
         StaticItem = 1,
@@ -38,7 +40,7 @@ namespace Snowlight.Game.Items
         Dispenser = 32,
         Fireworks = 33,
         MusicDisk = 34,
-        Rental = 35
+        Rental = 35,
     }
 
     public static class ItemBehaviorUtil

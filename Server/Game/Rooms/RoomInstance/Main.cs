@@ -21,6 +21,7 @@ using Snowlight.Game.Items;
 using Snowlight.Game.Pets;
 using Snowlight.Game.Music;
 using Snowlight.Game.Rooms.Trading;
+using Snowlight.Game.Items.Wired;
 
 namespace Snowlight.Game.Rooms
 {
@@ -125,6 +126,7 @@ namespace Snowlight.Game.Rooms
             mTemporaryStickieRights = new Dictionary<uint, uint>();
             mTradeManager = new TradeManager();
             mRollerItems = new List<Item>[mCachedModel.Heightmap.SizeX, mCachedModel.Heightmap.SizeY];
+            mWiredManager = new WiredManager(this);
 
             foreach (Bot Bot in BotManager.GenerateBotInstancesForRoom(RoomId))
             {
@@ -139,7 +141,7 @@ namespace Snowlight.Game.Rooms
 
                 foreach (DataRow Row in ItemTable.Rows)
                 {
-                    Item Item = ItemFactory.CreateFromDatabaseRow(Row);
+                    Item Item = ItemFactory.CreateFromDatabaseRow(Row, mWiredManager);
 
                     if (Item.PendingExpiration && Item.ExpireTimeLeft <= 0)
                     {
@@ -152,7 +154,7 @@ namespace Snowlight.Game.Rooms
                         continue;
                     }
 
-                    mItems.Add(Item.Id, Item);
+                    mItems.Add(Item.Id, Item); 
                     IncrecementFurniLimitCache(Item.Definition.Behavior);
 
                     ItemEventDispatcher.InvokeItemEventHandler(null, Item, this, ItemEventType.InstanceLoaded);
@@ -160,11 +162,11 @@ namespace Snowlight.Game.Rooms
 
                 // Static objects
                 MySqlClient.SetParameter("id", RoomId);
-                DataTable StaticObjectTable = MySqlClient.ExecuteQueryTable("SELECT name,position,height,rotation,is_seat FROM static_objects WHERE room_id = @id");
+                DataTable StaticObjectTable = MySqlClient.ExecuteQueryTable("SELECT id,name,position,height,rotation,is_seat FROM static_objects WHERE room_id = @id");
 
                 foreach (DataRow Row in StaticObjectTable.Rows)
                 {
-                    mStaticObjects.Add(new StaticObject((string)Row["name"], Vector2.FromString((string)Row["position"]),
+                    mStaticObjects.Add(new StaticObject((uint)Row["id"], (string)Row["name"], Vector2.FromString((string)Row["position"]),
                         (int)Row["height"], (int)Row["rotation"], (Row["is_seat"].ToString() == "1")));
                 }
             

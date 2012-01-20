@@ -12,6 +12,7 @@ using System.Collections.ObjectModel;
 
 using Snowlight.Game.Rooms.Trading;
 using Snowlight.Config;
+using Snowlight.Game.Items.Wired;
 
 namespace Snowlight.Game.Rooms
 {
@@ -194,6 +195,8 @@ namespace Snowlight.Game.Rooms
             {
                 NewActor.ApplyEffect(Session.CurrentEffect);
             }
+
+            WiredManager.HandleEnterRoom(NewActor);
 
             NewActor.UpdateNeeded = true;
             return true;

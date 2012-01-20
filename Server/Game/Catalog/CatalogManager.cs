@@ -333,24 +333,23 @@ namespace Snowlight.Game.Catalog
         {
             CatalogItem PetItem = null;
             string ItemName = Message.PopString();
-
             if (mCatalogItemsNameIndex.ContainsKey(ItemName))
             {
                 PetItem = mCatalogItemsNameIndex[ItemName];
             }
-
+            
             if (PetItem == null || PetItem.Definition.Behavior != ItemBehavior.Pet)
             {
+
                 return;
             }
 
             int PetType = PetItem.Definition.BehaviorData;
-
             Session.SendData(CatalogPetDataComposer.Compose(PetItem, PetDataManager.GetRaceDataForType(PetType), PetType));
         }
 
         private static void CheckPetName(Session Session, ClientMessage Message)
-        {
+        {         
             Session.SendData(CatalogVerifyPetNameResultComposer.Compose((int)PetName.VerifyPetName(Message.PopString())));
         }
     }

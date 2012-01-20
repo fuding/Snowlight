@@ -20,7 +20,6 @@ namespace Snowlight.Game.Rights
         private List<Badge> mStaticBadges;
         private Dictionary<string, Badge> mAchievementBadges;
         private List<string> mIndexCache;
-        private List<string> mRightsCache;
 
         public SortedDictionary<int, Badge> EquippedBadges
         {
@@ -65,7 +64,6 @@ namespace Snowlight.Game.Rights
             mStaticBadges = new List<Badge>();
             mAchievementBadges = new Dictionary<string, Badge>();
             mIndexCache = new List<string>();
-            mRightsCache = new List<string>();
 
             ReloadCache(MySqlClient, UserAchievementCache);
         }
@@ -78,17 +76,10 @@ namespace Snowlight.Game.Rights
             List<string> IndexCache = new List<string>();
 
             MySqlClient.SetParameter("userid", mUserId);
-            DataTable Table = MySqlClient.ExecuteQueryTable("SELECT badge_id,slot_id,source_type,source_data FROM badges WHERE user_id = @userid");
+            DataTable Table = MySqlClient.ExecuteQueryTable("SELECT badge_code,slot_id,source_type,source_data FROM user_badges WHERE user_id = @userid");
 
             foreach (DataRow Row in Table.Rows)
-            {
-                Badge Badge = RightsManager.GetBadgeById((uint)Row["badge_id"]);
-
-                if (Badge == null)
-                {
-                    continue;
-                }
-
+            {               
                 string SourceType = Row["source_type"].ToString();
                 string SourceData = Row["source_data"].ToString();
 
@@ -96,7 +87,7 @@ namespace Snowlight.Game.Rights
 
                 if (SourceType == "static")
                 {
-                    BadgeToEquip = Badge;
+                    BadgeToEquip = new Badge(Row["badge_code"].ToString());
                     StaticBadges.Add(BadgeToEquip);
                 }
                 else if (SourceType == "achievement")
@@ -111,14 +102,14 @@ namespace Snowlight.Game.Rights
                     if (UserAchievement == null || UserAchievement.Level < 1)
                     {
                         MySqlClient.SetParameter("userid", mUserId);
-                        MySqlClient.SetParameter("badgeid", Badge.Id);
-                        MySqlClient.ExecuteNonQuery("DELETE FROM badges WHERE user_id = @userid AND badge_id = @badgeid");
+                        MySqlClient.SetParameter("badgecode", Row["badge_code"].ToString());
+                        MySqlClient.ExecuteNonQuery("DELETE FROM user_badges WHERE user_id = @userid AND badge_id = @badgeid");
                         continue;
                     }
 
                     string Code = UserAchievement.GetBadgeCodeForLevel();
 
-                    BadgeToEquip = (Badge.Code == Code ? Badge : RightsManager.GetBadgeByCode(Code));
+                    BadgeToEquip = new Badge(Code);
                     AchievementBadges.Add(SourceData, BadgeToEquip);
                 }
 
@@ -140,31 +131,10 @@ namespace Snowlight.Game.Rights
                 mEquippedBadges = EquippedBadges;
                 mStaticBadges = StaticBadges;
                 mAchievementBadges = AchievementBadges;
-                mRightsCache = RegenerateRights();
                 mIndexCache = IndexCache;
             }
         }
-
-        public List<string> RegenerateRights()
-        {
-            List<string> Rights = new List<string>();
-            Rights.AddRange(RightsManager.GetDefaultRights());
-
-            lock (mSyncRoot)
-            {
-                foreach (Badge Badge in mStaticBadges)
-                {
-                    Rights.AddRange(RightsManager.GetRightsForBadge(Badge));
-                }
-
-                foreach (Badge Badge in mAchievementBadges.Values)
-                {
-                    Rights.AddRange(RightsManager.GetRightsForBadge(Badge));
-                }
-            }
-
-            return Rights;
-        }
+     
 
         public bool ContainsCode(string BadgeCode)
         {
@@ -174,20 +144,13 @@ namespace Snowlight.Game.Rights
             }
         }
 
-        public bool HasRight(string Right)
-        {
-            lock (mSyncRoot)
-            {
-                return mRightsCache.Contains(Right);
-            }
-        }
 
         public void UpdateAchievementBadge(SqlDatabaseClient MySqlClient, string AchievementGroup, Badge NewBadge)
         {
             MySqlClient.SetParameter("userid", mUserId);
             MySqlClient.SetParameter("sourcetype", "achievement");
             MySqlClient.SetParameter("sourcedata", AchievementGroup);
-            MySqlClient.SetParameter("badgeid", NewBadge.Id);
+            MySqlClient.SetParameter("badgecode", NewBadge.Code);
 
             lock (mSyncRoot)
             {
@@ -204,11 +167,11 @@ namespace Snowlight.Game.Rights
                     mIndexCache.Remove(OldBadge.Code);
                     mAchievementBadges[AchievementGroup] = NewBadge;
 
-                    MySqlClient.ExecuteNonQuery("UPDATE badges SET badge_id = @badgeid WHERE user_id = @userid AND source_type = @sourcetype AND source_data = @sourcedata LIMIT 1");
+                    MySqlClient.ExecuteNonQuery("UPDATE badges SET badge_code = @badgecode WHERE user_id = @userid AND source_type = @sourcetype AND source_data = @sourcedata LIMIT 1");
 
                     foreach (KeyValuePair<int, Badge> Badge in mEquippedBadges)
                     {
-                        if (Badge.Value.Id == OldBadge.Id)
+                        if (Badge.Value.Code == OldBadge.Code)
                         {
                             mEquippedBadges[Badge.Key] = NewBadge;
                             break;
@@ -218,10 +181,9 @@ namespace Snowlight.Game.Rights
                 else
                 {
                     mAchievementBadges.Add(AchievementGroup, NewBadge);
-                    MySqlClient.ExecuteNonQuery("INSERT INTO badges (user_id,badge_id,source_type,source_data) VALUES (@userid,@badgeid,@sourcetype,@sourcedata)");
+                    MySqlClient.ExecuteNonQuery("INSERT INTO user_badges (user_id,badge_code,source_type,source_data) VALUES (@userid,@badgecode,@sourcetype,@sourcedata)");
                 }
 
-                mRightsCache = RegenerateRights();
                 mIndexCache.Add(NewBadge.Code);
             }
         }
@@ -229,14 +191,14 @@ namespace Snowlight.Game.Rights
         public void UpdateBadgeOrder(SqlDatabaseClient MySqlClient, Dictionary<int, Badge> NewSettings)
         {
             MySqlClient.SetParameter("userid", mUserId);
-            MySqlClient.ExecuteNonQuery("UPDATE badges SET slot_id = 0 WHERE user_id = @userid");
+            MySqlClient.ExecuteNonQuery("UPDATE user_badges SET slot_id = 0 WHERE user_id = @userid");
 
             foreach (KeyValuePair<int, Badge> EquippedBadge in NewSettings)
             {
                 MySqlClient.SetParameter("userid", mUserId);
                 MySqlClient.SetParameter("slotid", EquippedBadge.Key);
-                MySqlClient.SetParameter("badgeid", EquippedBadge.Value.Id);
-                MySqlClient.ExecuteNonQuery("UPDATE badges SET slot_id = @slotid WHERE user_id = @userid AND badge_id = @badgeid LIMIT 1");
+                MySqlClient.SetParameter("badgecode", EquippedBadge.Value.Code);
+                MySqlClient.ExecuteNonQuery("UPDATE user_badges SET slot_id = @slotid WHERE user_id = @userid AND badge_code = @badgecode LIMIT 1");
             }
 
             lock (mSyncRoot)
@@ -245,7 +207,7 @@ namespace Snowlight.Game.Rights
             }
         }
 
-        public void DisableSubscriptionBadge(string BadgeCodePrefix)
+        public void DisableSubscriptionBadge(string BadgeCodePrefix) 
         {
             lock (mSyncRoot)
             {
@@ -268,10 +230,61 @@ namespace Snowlight.Game.Rights
                         break;
                     }
                 }
-
-                mRightsCache = RegenerateRights();
             }
         }
+
+        public void RemoveBadge(string BadgeCode)
+        {
+            lock (mSyncRoot)
+            {
+                foreach (Badge badge in mStaticBadges)
+                {
+                    if (badge.Code == BadgeCode)
+                    {
+                        mIndexCache.Remove(badge.Code);
+                        mStaticBadges.Remove(badge);
+
+                        foreach (KeyValuePair<int, Badge> EquipData in mEquippedBadges)
+                        {
+                            if (EquipData.Value.Code == BadgeCode)
+                            {
+                                mEquippedBadges.Remove(EquipData.Key);
+                                break;
+                            }
+                        }
+
+                        using (SqlDatabaseClient MySqlClient = SqlDatabaseManager.GetClient())
+                        {
+                            MySqlClient.SetParameter("userid", mUserId);
+                            MySqlClient.SetParameter("badgecode", BadgeCode);
+                            MySqlClient.ExecuteNonQuery("DELETE FROM user_badges WHERE user_id = @userid AND badge_code = @badgecode");
+                        }
+
+                        break;
+                    }
+                }
+            }
+        }
+
+
+        public void AddBadge(string BadgeCode)
+        {
+            lock (mSyncRoot)
+            {
+                if (!mStaticBadges.Contains(new Badge(BadgeCode)))
+                {
+                    mStaticBadges.Add(new Badge(BadgeCode));
+
+                    using (SqlDatabaseClient MySqlClient = SqlDatabaseManager.GetClient())
+                    {
+                        MySqlClient.SetParameter("userid", mUserId);
+                        MySqlClient.SetParameter("badgecode", BadgeCode);
+                        MySqlClient.ExecuteNonQuery("INSERT INTO user_badges (user_id, badge_code) VALUES (@userid,@badgecode)");
+                    }
+                }
+            }
+        }
+
 
         public bool ContainsCodeWith(string Code)
         {

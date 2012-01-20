@@ -47,7 +47,6 @@ namespace Snowlight.Communication.Outgoing
                 foreach (uint ItemId in Level.Value)
                 {
                     ItemDefinition Definition = ItemDefinitionManager.GetDefinition(ItemId);
-
                     Message.AppendStringWithBreak(Definition.TypeLetter);
                     Message.AppendUInt32(Definition.SpriteId);
                 }

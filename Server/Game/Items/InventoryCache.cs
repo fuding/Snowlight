@@ -47,7 +47,7 @@ namespace Snowlight.Game.Items
                 mInner.Clear();
 
                 MySqlClient.SetParameter("userid", mCharacterId);
-                DataTable Table = MySqlClient.ExecuteQueryTable("SELECT * FROM items WHERE user_id = @userid");
+                DataTable Table = MySqlClient.ExecuteQueryTable("SELECT * FROM items WHERE user_id = @userid AND room_id = 0");
 
                 foreach (DataRow Row in Table.Rows)
                 {

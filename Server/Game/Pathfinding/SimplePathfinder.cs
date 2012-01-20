@@ -32,6 +32,7 @@ namespace Snowlight.Game.Pathfinding
 
         public override void SetRoomInstance(RoomInstance Room, uint ActorId)
         {
+            
             mCurrentInstance = Room;
             mActorId = ActorId;
             mPath = new List<Vector2>();
@@ -149,6 +150,7 @@ namespace Snowlight.Game.Pathfinding
                     MadeProgress = false;
                 }
 
+              
                 if (MadeProgress)
                 {
                     Points.Add(NextPoint);

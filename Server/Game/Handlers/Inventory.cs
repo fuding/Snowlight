@@ -15,6 +15,8 @@ using Snowlight.Game.AvatarEffects;
 using Snowlight.Game.Achievements;
 using Snowlight.Storage;
 using Snowlight.Communication.Incoming;
+using System.Data;
+using Snowlight.Communication.Outgoing.User;
 
 namespace Snowlight.Game.Handlers
 {
@@ -29,6 +31,7 @@ namespace Snowlight.Game.Handlers
             DataRouter.RegisterHandler(OpcodesIn.USER_SET_BADGES, new ProcessRequestCallback(SetBadgeOrder));
             DataRouter.RegisterHandler(OpcodesIn.USER_CHANGE_LOOK, new ProcessRequestCallback(SetFigure));
             DataRouter.RegisterHandler(OpcodesIn.USER_CHANGE_MOTTO, new ProcessRequestCallback(SetMotto));
+            DataRouter.RegisterHandler(OpcodesIn.CHECK_USERNAME, new ProcessRequestCallback(IsNameTaken));
 
             DataRouter.RegisterHandler(OpcodesIn.USER_WARDROBE_GET, new ProcessRequestCallback(GetWardrobe));
             DataRouter.RegisterHandler(OpcodesIn.USER_WARDROBE_SAVE, new ProcessRequestCallback(SetWardrobe));
@@ -69,7 +72,7 @@ namespace Snowlight.Game.Handlers
 
                 int SlotId = Message.PopWiredInt32();
                 string BadgeCode = Message.PopString();
-                Badge BadgeRef = RightsManager.GetBadgeByCode(BadgeCode);
+                Badge BadgeRef = new Badge(BadgeCode);
 
                 if (BadgeRef == null || !Session.BadgeCache.ContainsCode(BadgeCode) || SlotId >= 6 ||
                     SlotId <= 0 || NewSettings.ContainsKey(SlotId))
@@ -151,6 +154,28 @@ namespace Snowlight.Game.Handlers
             Session.SendInfoUpdate();
         }
 
+        private static void IsNameTaken(Session Session, ClientMessage Message)
+        {
+            String Username = Message.PopString();
+            using (SqlDatabaseClient MySqlClient = SqlDatabaseManager.GetClient())
+            {
+                MySqlClient.SetParameter("username", Username);
+                DataRow Taken = MySqlClient.ExecuteQueryRow("SELECT null FROM characters WHERE username = @username LIMIT 1");
+                if (Taken == null)
+                {
+                    ServerMessage awnser = new ServerMessage(571);
+                    awnser.AppendInt32(0);
+                    awnser.AppendStringWithBreak(Username);
+                    awnser.AppendInt32(0);
+                    Session.SendData(awnser);
+                }
+                else
+                {
+                    Session.SendData(NameTaken.Compose(Username));
+                }
+            }
+        }
+        
         public static int GetWardrobeSlotAmountForSession(Session Session)
         {
             int WardrobeSlots = 0;

@@ -5,17 +5,8 @@ namespace Snowlight.Game.Rights
 {
     public class Badge
     {
-        private uint mId;
         private string mCode;
-        private List<uint> mRightsSets;
-
-        public uint Id
-        {
-            get
-            {
-                return mId;
-            }
-        }
+        private uint mId;
 
         public string Code
         {
@@ -25,19 +16,18 @@ namespace Snowlight.Game.Rights
             }
         }
 
-        public List<uint> RightsSets
+        public uint Id
         {
             get
             {
-                return mRightsSets;
+                return mId;
             }
         }
 
-        public Badge(uint Id, string Code, List<uint> RightsSets)
+        public Badge(string Code)
         {
-            mId = Id;
             mCode = Code;
-            mRightsSets = RightsSets;
+            mId = 0;
         }
     }
 }

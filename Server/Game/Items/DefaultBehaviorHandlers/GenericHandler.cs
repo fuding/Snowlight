@@ -19,7 +19,7 @@ namespace Snowlight.Game.Items.DefaultBehaviorHandlers
             ItemEventDispatcher.RegisterEventHandler(ItemBehavior.Seat, new ItemEventHandler(HandleGenericSwitch));
             ItemEventDispatcher.RegisterEventHandler(ItemBehavior.StepSwitch, new ItemEventHandler(HandleStepSwitch));
             ItemEventDispatcher.RegisterEventHandler(ItemBehavior.Scoreboard, new ItemEventHandler(HandleScoreboard));
-            ItemEventDispatcher.RegisterEventHandler(ItemBehavior.Rental, new ItemEventHandler(HandleRental));
+            ItemEventDispatcher.RegisterEventHandler(ItemBehavior.Rental, new ItemEventHandler(HandleRental));            
         }
 
         private static bool HandleGenericSwitch(Session Session, Item Item, RoomInstance Instance, ItemEventType Event, int RequestData, uint Opcode)
@@ -190,6 +190,6 @@ namespace Snowlight.Game.Items.DefaultBehaviorHandlers
             }
 
             return HandleGenericSwitch(Session, Item, Instance, Event, RequestData, 0);
-        }
+        }       
     }
 }

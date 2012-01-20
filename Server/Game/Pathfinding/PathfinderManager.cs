@@ -13,7 +13,6 @@ namespace Snowlight.Game.Pathfinding
             {
                 default:
                 case "simple":
-
                     return new SimplePathfinder();
             }
         }

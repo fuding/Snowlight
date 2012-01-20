@@ -123,7 +123,7 @@ namespace Snowlight.Game.Achievements
                 int ProgressRemainder = NewProgress - TargetLevelData.Requirement;
                 NewProgress = 0;
 
-                Badge BadgeData = RightsManager.GetBadgeByCode(AchievementGroup + TargetLevel);
+                Badge BadgeData = new Badge(AchievementGroup + TargetLevel);
 
                 if (NewTarget > TotalLevels)
                 {
