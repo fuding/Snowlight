@@ -34,7 +34,7 @@ namespace Snowlight.Network
         {
             if (mSocket != null)
             {
-                mSocket.Dispose();
+              //  mSocket.Dispose(); Not implemented in MONO
                 mSocket = null;
             }
         }

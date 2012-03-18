@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Diagnostics;
+using System.IO;
 using Snowlight.Config;
 
 namespace Snowlight
@@ -16,8 +17,8 @@ namespace Snowlight
         public static void Listen()
         {
             while (Program.Alive)
-            {
-                if (Console.ReadKey(true).Key == ConsoleKey.Enter)
+            {                
+				if (Console.ReadKey(true).Key == ConsoleKey.Enter)
                 {
                     Console.Write("$" + Environment.UserName.ToLower() + "@snowlight> ");
                     string Input = Console.ReadLine();
@@ -51,14 +52,21 @@ namespace Snowlight
                         return;
                     }
                 case "restart":
-
-                    Process.Start(Environment.CurrentDirectory + "\\Snowlight.exe", "\"delay 1500\"");
+				
+				    String StartCommand = "Snowlight.exe";
+				    String Arguments = "\"delay 1500\"";
+				
+			    	if(Type.GetType ("Mono.Runtime") != null) {			
+					      Arguments = StartCommand + " " + Arguments;
+					      StartCommand = "mono";
+				    }
+				    Process.Start(StartCommand, Arguments);
                     Program.Stop();
                     return;
 
                 case "crash":
 
-                    Environment.FailFast(string.Empty);
+                    Environment.Exit(0);
                     return;
 
                 case "stop":
@@ -68,7 +76,7 @@ namespace Snowlight
 
                 case "cls":
 
-                    Output.ClearStream();
+                    Output.ClearStream(); 
                     break;
 
                 default:

@@ -45,10 +45,6 @@ namespace Snowlight.Communication.Incoming
 
         public static void HandleData(Session Session, ClientMessage Message)
         {
-            if (Program.DEBUG)
-            {
-                Output.WriteLine("MESSAGE:" + Message.Id + " " + Message.BodyToString(), OutputLevel.Warning); //DEBUG INCOMING PACKETS
-            }
             if (Session == null || Session.Stopped || Message == null)
             {
                 return;

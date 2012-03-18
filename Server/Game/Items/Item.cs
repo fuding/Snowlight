@@ -10,445 +10,360 @@ using Snowlight.Game.Items.Wired;
 
 namespace Snowlight.Game.Items
 {
-    public class Item
-    {
-        private uint mId;
-        private uint mDefinitionId;
-        private uint mUserId;
-        private uint mRoomId;
-        private Vector3 mRoomPos;
-        private string mRoomWallPos;
-        private int mRoomRot;
-        private string mFlags;
-        private string mDisplayFlags;
-        private string mInitialFlags;
-        private bool mUntradable;
-        private ItemDefinition mCachedDefinition;
-        private bool mUpdateNeeded;
-        private int mUpdateTicks;
-        private Dictionary<int, uint> mTmpInteractingUsers;
-        private uint mSoundManagerId;
-        private int mSoundManagerOrder;
-        private double mExpireTimestamp;
-        private WiredData mWiredData;
-        private WiredManager mWiredManager;
+	public class Item
+	{
+		private uint mId;
+		private uint mDefinitionId;
+		private uint mUserId;
+		private uint mRoomId;
+		private Vector3 mRoomPos;
+		private string mRoomWallPos;
+		private int mRoomRot;
+		private string mFlags;
+		private string mDisplayFlags;
+		private string mInitialFlags;
+		private bool mUntradable;
+		private ItemDefinition mCachedDefinition;
+		private bool mUpdateNeeded;
+		private int mUpdateTicks;
+		private Dictionary<int, uint> mTmpInteractingUsers;
+		private uint mSoundManagerId;
+		private int mSoundManagerOrder;
+		private double mExpireTimestamp;
+		private WiredData mWiredData;
 
-        public uint Id
-        {
-            get
-            {
-                return mId;
-            }
-        }
+		public uint Id {
+			get {
+				return mId;
+			}
+		}
 
-        public ItemDefinition Definition
-        {
-            get
-            {
-                if (mCachedDefinition == null)
-                {
-                    mCachedDefinition = ItemDefinitionManager.GetDefinition(mDefinitionId);
-                }
+		public ItemDefinition Definition {
+			get {
+				if (mCachedDefinition == null) {
+					mCachedDefinition = ItemDefinitionManager.GetDefinition (mDefinitionId);
+				}
 
-                return mCachedDefinition;
-            }
-        }
+				return mCachedDefinition;
+			}
+		}
 
-        public uint DefinitionId
-        {
-            get
-            {
-                return mDefinitionId;
-            }
-        }
+		public uint DefinitionId {
+			get {
+				return mDefinitionId;
+			}
+		}
 
-        public uint UserId
-        {
-            get
-            {
-                return mUserId;
-            }
-        }
+		public uint UserId {
+			get {
+				return mUserId;
+			}
+		}
 
-        public uint RoomId
-        {
-            get
-            {
-                return mRoomId;
-            }
-        }
+		public uint RoomId {
+			get {
+				return mRoomId;
+			}
+		}
 
-        public Vector3 RoomPosition
-        {
-            get
-            {
-                return mRoomPos;
-            }
-        }
+		public Vector3 RoomPosition {
+			get {
+				return mRoomPos;
+			}
+		}
 
-        public Vector2 SquareInFront
-        {
-            get
-            {
-                Vector2 NewPosition = mRoomPos.GetVector2();
+		public Vector2 SquareInFront {
+			get {
+				Vector2 NewPosition = mRoomPos.GetVector2 ();
 
-                if (mRoomRot == 0)
-                {
-                    NewPosition.Y--;
-                }
-                else if (mRoomRot == 2)
-                {
-                    NewPosition.X++;
-                }
-                else if (mRoomRot == 4)
-                {
-                    NewPosition.Y++;
-                }
-                else if (mRoomRot == 6)
-                {
-                    NewPosition.X--;
-                }
+				if (mRoomRot == 0) {
+					NewPosition.Y--;
+				} else if (mRoomRot == 2) {
+					NewPosition.X++;
+				} else if (mRoomRot == 4) {
+					NewPosition.Y++;
+				} else if (mRoomRot == 6) {
+					NewPosition.X--;
+				}
 
-                return NewPosition;
-            }
-        }
+				return NewPosition;
+			}
+		}
 
-        public Vector2 SquareBehind
-        {
-            get
-            {
-                Vector2 NewPosition = mRoomPos.GetVector2();
+		public Vector2 SquareBehind {
+			get {
+				Vector2 NewPosition = mRoomPos.GetVector2 ();
 
-                if (mRoomRot == 0)
-                {
-                    NewPosition.Y++;
-                }
-                else if (mRoomRot == 2)
-                {
-                    NewPosition.X--;
-                }
-                else if (mRoomRot == 4)
-                {
-                    NewPosition.Y--;
-                }
-                else if (mRoomRot == 6)
-                {
-                    NewPosition.X++;
-                }
+				if (mRoomRot == 0) {
+					NewPosition.Y++;
+				} else if (mRoomRot == 2) {
+					NewPosition.X--;
+				} else if (mRoomRot == 4) {
+					NewPosition.Y--;
+				} else if (mRoomRot == 6) {
+					NewPosition.X++;
+				}
 
-                return NewPosition;
-            }
-        }
+				return NewPosition;
+			}
+		}
 
-        public string RoomWallPosition
-        {
-            get
-            {
-                return mRoomWallPos;
-            }
-        }
+		public string RoomWallPosition {
+			get {
+				return mRoomWallPos;
+			}
+		}
 
-        public int RoomRotation
-        {
-            get
-            {
-                return mRoomRot;
-            }
-        }
+		public int RoomRotation {
+			get {
+				return mRoomRot;
+			}
+		}
 
-        public string Flags
-        {
-            get
-            {
-                return mFlags;
-            }
+		public string Flags {
+			get {
+				return mFlags;
+			}
 
-            set
-            {
-                mFlags = value;
-            }
-        }
+			set {
+				mFlags = value;
+			}
+		}
 
-        public string DisplayFlags
-        {
-            get
-            {
-                return mDisplayFlags;
-            }
+		public string DisplayFlags {
+			get {
+				return mDisplayFlags;
+			}
 
-            set
-            {
-                mDisplayFlags = value;
-            }
-        }
+			set {
+				mDisplayFlags = value;
+			}
+		}
 
-        public bool CanTrade
-        {
-            get
-            {
-                return (!mUntradable && Definition.AllowTrade);
-            }
-        }
+		public bool CanTrade {
+			get {
+				return (!mUntradable && Definition.AllowTrade);
+			}
+		}
 
-        public bool CanRecycle
-        {
-            get
-            {
-                return (!mUntradable && Definition.AllowRecycle);
-            }
-        }
+		public bool CanRecycle {
+			get {
+				return (!mUntradable && Definition.AllowRecycle);
+			}
+		}
 
-        public bool CanSell
-        {
-            get
-            {
-                return (!mUntradable && Definition.AllowSell);
-            }
-        }
+		public bool CanSell {
+			get {
+				return (!mUntradable && Definition.AllowSell);
+			}
+		}
 
-        public bool InRoom
-        {
-            get
-            {
-                return (mRoomId > 0);
-            }
-        }
+		public bool InRoom {
+			get {
+				return (mRoomId > 0);
+			}
+		}
 
-        private bool UpdateNeeded
-        {
-            get
-            {
-                return mUpdateNeeded;
-            }
-        }
+		private bool UpdateNeeded {
+			get {
+				return mUpdateNeeded;
+			}
+		}
 
-        private int UpdateTicks
-        {
-            get
-            {
-                return mUpdateTicks;
-            }
-        }
+		private int UpdateTicks {
+			get {
+				return mUpdateTicks;
+			}
+		}
 
-        public Dictionary<int, uint> TemporaryInteractionReferenceIds
-        {
-            get
-            {
-                return mTmpInteractingUsers;
-            }
+		public Dictionary<int, uint> TemporaryInteractionReferenceIds {
+			get {
+				return mTmpInteractingUsers;
+			}
 
-            set
-            {
-                mTmpInteractingUsers = value;
-            }
-        }
+			set {
+				mTmpInteractingUsers = value;
+			}
+		}
 
-        public bool InSoundManager
-        {
-            get
-            {
-                return mSoundManagerId > 0;
-            }
-        }
+		public bool InSoundManager {
+			get {
+				return mSoundManagerId > 0;
+			}
+		}
 
-        public uint SoundManagerId
-        {
-            get
-            {
-                return mSoundManagerId;
-            }
-        }
+		public uint SoundManagerId {
+			get {
+				return mSoundManagerId;
+			}
+		}
 
-        public int SoundManagerOrder
-        {
-            get
-            {
-                return mSoundManagerOrder;
-            }
-        }
+		public int SoundManagerOrder {
+			get {
+				return mSoundManagerOrder;
+			}
+		}
 
-        public bool PendingExpiration
-        {
-            get
-            {
-                return (mExpireTimestamp > 0);
-            }
-        }
+		public bool PendingExpiration {
+			get {
+				return (mExpireTimestamp > 0);
+			}
+		}
 
-        public double ExpireTimeLeft
-        {
-            get
-            {
-                return mExpireTimestamp - UnixTimestamp.GetCurrent();
-            }
-        }
+		public double ExpireTimeLeft {
+			get {
+				return mExpireTimestamp - UnixTimestamp.GetCurrent ();
+			}
+		}
 
-        public WiredData WiredData
-        {
-            get
-            {
-                return mWiredData;
-            }
-            set
-            {
-                mWiredData = value;
-            }
-        }
-
-        public WiredManager WiredManager
-        {
-            get
-            {
-                return mWiredManager;
-            }
-            set
-            {
-                mWiredManager = value;
-            }
-        }
-
-        public Item(uint Id, uint DefinitionId, uint UserId, uint RoomId, Vector3 RoomPos, string RoomWallPos, int Rotation,
+		public WiredData WiredData {
+			get {
+				return mWiredData;
+			}
+			set {
+				mWiredData = value;
+			}
+		}
+		 
+		public Item (uint Id, uint DefinitionId, uint UserId, uint RoomId, Vector3 RoomPos, string RoomWallPos, int Rotation,
             string Flags, string DisplayFlags, bool Untradable, uint SoundManagerId, int SoundManagerOrder, double ExpireTimestamp, WiredManager WiredManager)
-        {
-            mId = Id;
-            mDefinitionId = DefinitionId;
-            mUserId = UserId;
-            mRoomId = RoomId;
-            mRoomPos = RoomPos;
-            mRoomWallPos = RoomWallPos;
-            mRoomRot = Rotation;
-            mFlags = Flags;
-            mDisplayFlags = DisplayFlags;
-            mInitialFlags = Flags;
-            mUntradable = Untradable;
-            mCachedDefinition = ItemDefinitionManager.GetDefinition(mDefinitionId);
-            mTmpInteractingUsers = new Dictionary<int, uint>();
-            mSoundManagerId = SoundManagerId;
-            mSoundManagerOrder = SoundManagerOrder;
-            mExpireTimestamp = ExpireTimestamp;
-            mWiredManager = WiredManager;
+		{
+			mId = Id;
+			mDefinitionId = DefinitionId;
+			mUserId = UserId;
+			mRoomId = RoomId;
+			mRoomPos = RoomPos;
+			mRoomWallPos = RoomWallPos;
+			mRoomRot = Rotation;
+			mFlags = Flags;
+			mDisplayFlags = DisplayFlags;
+			mInitialFlags = Flags;
+			mUntradable = Untradable;
+			mCachedDefinition = ItemDefinitionManager.GetDefinition (mDefinitionId);
+			mTmpInteractingUsers = new Dictionary<int, uint> ();
+			mSoundManagerId = SoundManagerId;
+			mSoundManagerOrder = SoundManagerOrder;
+			mExpireTimestamp = ExpireTimestamp;
+		
 
-            if (mCachedDefinition.Behavior == ItemBehavior.WiredCondition || mCachedDefinition.Behavior == ItemBehavior.WiredTrigger || mCachedDefinition.Behavior == ItemBehavior.WiredEffect)
-            {              
-                if (mWiredManager == null)
-                {
-                    return;
-                }
-                mWiredData = mWiredManager.LoadWired(Id, mCachedDefinition.BehaviorData);
-            }
-        }
+			if (WiredManager != null && (mCachedDefinition.Behavior == ItemBehavior.WiredCondition || mCachedDefinition.Behavior == ItemBehavior.WiredTrigger || mCachedDefinition.Behavior == ItemBehavior.WiredEffect)) {              
+				mWiredData = WiredManager.LoadWired (Id, mCachedDefinition.BehaviorData);
+				if (mCachedDefinition.Behavior == ItemBehavior.WiredTrigger) {
+					switch (WiredTypesUtil.TriggerFromInt (mCachedDefinition.BehaviorData)) {
+					case WiredTriggerTypes.periodically:
+						RequestUpdate (mWiredData.Data2);
+						break;
+					case WiredTriggerTypes.walks_on_furni:
+					case WiredTriggerTypes.walks_off_furni:
+						WiredManager.RegisterWalkItems(mId);
+						break;
+					}
+					
+				}							
+				
+			}
+		}
 
-        public void Update(RoomInstance Instance)
-        {
-            if (mUpdateTicks > 0)
-            {
-                mUpdateTicks--;
-            }
+		public void Update (RoomInstance Instance)
+		{
+			if (mUpdateTicks > 0) {
+				mUpdateTicks--;
+			}
 
-            if (mUpdateNeeded && mUpdateTicks <= 0)
-            {
-                mUpdateNeeded = false;
-                ItemEventDispatcher.InvokeItemEventHandler(null, this, Instance, ItemEventType.UpdateTick);
-            }
-        }
+			if (mUpdateNeeded && mUpdateTicks <= 0) {
+				mUpdateNeeded = false;
+				ItemEventDispatcher.InvokeItemEventHandler (null, this, Instance, ItemEventType.UpdateTick);
+			}
+		}
 
-        public void RequestUpdate(int Ticks)
-        {
-            mUpdateNeeded = true;
-            mUpdateTicks = Ticks;
-        }
+		public void RequestUpdate (int Ticks)
+		{
+			mUpdateNeeded = true;
+			mUpdateTicks = Ticks;
+		}
 
-        public void MoveToUserInventory(SqlDatabaseClient MySqlClient, uint UserId)
-        {
-            mUserId = UserId;
-            mRoomId = 0;
-            mRoomPos = new Vector3(0, 0, 0);
-            mRoomWallPos = string.Empty;
-            mRoomRot = 0; 
-            mSoundManagerId = 0;
-            mSoundManagerOrder = 0;     
+		public void MoveToUserInventory (SqlDatabaseClient MySqlClient, uint UserId)
+		{
+			mUserId = UserId;
+			mRoomId = 0;
+			mRoomPos = new Vector3 (0, 0, 0);
+			mRoomWallPos = string.Empty;
+			mRoomRot = 0; 
+			mSoundManagerId = 0;
+			mSoundManagerOrder = 0;     
 
-            if (MySqlClient != null)
-            {
-                SynchronizeDatabase(MySqlClient);
-                RoomManager.UnmarkWriteback(this);
-            }
-        }
+			if (MySqlClient != null) {
+				SynchronizeDatabase (MySqlClient);
+				RoomManager.UnmarkWriteback (this);
+			}
+		}
 
-        public void MoveToRoom(SqlDatabaseClient MySqlClient, uint RoomId, Vector3 Position, int Rotation, string WallPos = "")
-        {
-            mUserId = 0;
-            mRoomId = RoomId;
-            mRoomPos = Position;
-            mRoomWallPos = WallPos;
-            mRoomRot = Rotation;
-            mSoundManagerId = 0;
-            mSoundManagerOrder = 0;
+		public void MoveToRoom (SqlDatabaseClient MySqlClient, uint RoomId, Vector3 Position, int Rotation, string WallPos = "")
+		{
+			mUserId = 0;
+			mRoomId = RoomId;
+			mRoomPos = Position;
+			mRoomWallPos = WallPos;
+			mRoomRot = Rotation;
+			mSoundManagerId = 0;
+			mSoundManagerOrder = 0;
 
-            if (MySqlClient != null)
-            {
-                SynchronizeDatabase(MySqlClient);
-                RoomManager.UnmarkWriteback(this);
-            }
-        }
+			if (MySqlClient != null) {
+				SynchronizeDatabase (MySqlClient);
+				RoomManager.UnmarkWriteback (this);
+			}
+		}
 
-        public void MoveToSoundManager(SqlDatabaseClient MySqlClient, uint SoundManagerId, int Order)
-        {
-            mUserId = 0;
-            mRoomId = 0;
-            mRoomPos = new Vector3();
-            mRoomWallPos = string.Empty;
-            mRoomRot = 0;
-            mSoundManagerId = SoundManagerId;
-            mSoundManagerOrder = Order;
+		public void MoveToSoundManager (SqlDatabaseClient MySqlClient, uint SoundManagerId, int Order)
+		{
+			mUserId = 0;
+			mRoomId = 0;
+			mRoomPos = new Vector3 ();
+			mRoomWallPos = string.Empty;
+			mRoomRot = 0;
+			mSoundManagerId = SoundManagerId;
+			mSoundManagerOrder = Order;
 
-            if (MySqlClient != null)
-            {
-                SynchronizeDatabase(MySqlClient);
-                RoomManager.UnmarkWriteback(this);
-            }
-        }
+			if (MySqlClient != null) {
+				SynchronizeDatabase (MySqlClient);
+				RoomManager.UnmarkWriteback (this);
+			}
+		}
 
-        public void SynchronizeDatabase(SqlDatabaseClient MySqlClient, bool FlagsOnly = false)
-        {
-            MySqlClient.SetParameter("id", mId);
-            MySqlClient.SetParameter("flags", mFlags);
-            MySqlClient.SetParameter("flagsd", mDisplayFlags);
+		public void SynchronizeDatabase (SqlDatabaseClient MySqlClient, bool FlagsOnly = false)
+		{
+			MySqlClient.SetParameter ("id", mId);
+			MySqlClient.SetParameter ("flags", mFlags);
+			MySqlClient.SetParameter ("flagsd", mDisplayFlags);
 
-            if (FlagsOnly)
-            {
-                MySqlClient.ExecuteNonQuery("UPDATE items SET flags = @flags, flags_display = @flagsd WHERE id = @id LIMIT 1");
-            }
-            else
-            {
-                MySqlClient.SetParameter("userid", mUserId);
-                MySqlClient.SetParameter("roomid", mRoomId);
-                MySqlClient.SetParameter("roompos", mRoomPos.ToString());
-                MySqlClient.SetParameter("roomwallpos", mRoomWallPos);
-                MySqlClient.SetParameter("roomrot", mRoomRot);
-                MySqlClient.SetParameter("soundmgrid", mSoundManagerId);
-                MySqlClient.SetParameter("soundmgrorder", mSoundManagerOrder);
-                MySqlClient.ExecuteNonQuery("UPDATE items SET user_id = @userid, room_id = @roomid, room_pos = @roompos, room_wall_pos = @roomwallpos, room_rot = @roomrot, flags = @flags, flags_display = @flagsd, soundmanager_id = @soundmgrid, soundmanager_order = @soundmgrorder WHERE id = @id LIMIT 1");
-            }
-        }
+			if (FlagsOnly) {
+				MySqlClient.ExecuteNonQuery ("UPDATE items SET flags = @flags, flags_display = @flagsd WHERE id = @id LIMIT 1");
+			} else {
+				MySqlClient.SetParameter ("userid", mUserId);
+				MySqlClient.SetParameter ("roomid", mRoomId);
+				MySqlClient.SetParameter ("roompos", mRoomPos.ToString ());
+				MySqlClient.SetParameter ("roomwallpos", mRoomWallPos);
+				MySqlClient.SetParameter ("roomrot", mRoomRot);
+				MySqlClient.SetParameter ("soundmgrid", mSoundManagerId);
+				MySqlClient.SetParameter ("soundmgrorder", mSoundManagerOrder);
+				MySqlClient.ExecuteNonQuery ("UPDATE items SET user_id = @userid, room_id = @roomid, room_pos = @roompos, room_wall_pos = @roomwallpos, room_rot = @roomrot, flags = @flags, flags_display = @flagsd, soundmanager_id = @soundmgrid, soundmanager_order = @soundmgrorder WHERE id = @id LIMIT 1");
+			}
+		}
 
-        public void BroadcastStateUpdate(RoomInstance Instance)
-        {
-            if (mCachedDefinition.Type == ItemType.FloorItem)
-            {
-                Instance.BroadcastMessage(RoomFloorItemUpdateFlagsComposer.Compose(mId, mDisplayFlags));
-            }
-            else if (mCachedDefinition.Type == ItemType.WallItem)
-            {
-                Instance.BroadcastMessage(RoomWallItemMovedComposer.Compose(this));
-            }
-        }
+		public void BroadcastStateUpdate (RoomInstance Instance)
+		{
+			if (mCachedDefinition.Type == ItemType.FloorItem) {
+				Instance.BroadcastMessage (RoomFloorItemUpdateFlagsComposer.Compose (mId, mDisplayFlags));
+			} else if (mCachedDefinition.Type == ItemType.WallItem) {
+				Instance.BroadcastMessage (RoomWallItemMovedComposer.Compose (this));
+			}
+		}
 
-        public void RemovePermanently(SqlDatabaseClient MySqlClient)
-        {
-            MySqlClient.SetParameter("id", mId);
-            MySqlClient.ExecuteNonQuery("DELETE FROM items WHERE id = @id LIMIT 1");
-            mWiredManager.RemoveWired(mId, MySqlClient);
-        }
-    }
+		public void RemovePermanently (SqlDatabaseClient MySqlClient)
+		{
+			MySqlClient.SetParameter ("id", mId);
+			MySqlClient.ExecuteNonQuery ("DELETE FROM items WHERE id = @id LIMIT 1");
+			RoomManager.GetInstanceByRoomId(mRoomId).WiredManager.RemoveWired (mId, MySqlClient);
+		}
+	}
 }

@@ -63,26 +63,7 @@ namespace Snowlight
             }
         }
 
-        [System.Runtime.InteropServices.DllImport("Kernel32")]
-        private static extern bool SetConsoleCtrlHandler(EventHandler handler, bool add);
 
-        private delegate bool EventHandler(CtrlType sig);
-        static EventHandler _handler;
-
-        enum CtrlType
-        {
-            CTRL_C_EVENT = 0,
-            CTRL_BREAK_EVENT = 1,
-            CTRL_CLOSE_EVENT = 2,
-            CTRL_LOGOFF_EVENT = 5,
-            CTRL_SHUTDOWN_EVENT = 6
-        }
-
-        private static bool Handler(CtrlType sig)
-        {
-            Stop();
-            return true;
-        }
 
 
 
@@ -92,18 +73,15 @@ namespace Snowlight
             mAlive = true;
             DateTime InitStart = DateTime.Now;
 
-            _handler += new EventHandler(Handler);
-            SetConsoleCtrlHandler(_handler, true);
-
-
-            // Set up basic output
-            Output.InitializeStream(true, OutputLevel.DebugInformation);
-            Output.WriteLine("Initializing Snowlight..."); // Cannot be localized before config+lang is loaded
+            // Set up basic output            
+            Console.WriteLine("Initializing Snowlight..."); // Cannot be localized before config+lang is loaded
 
             // Load configuration, translation, and re-configure output from config data
-            ConfigManager.Initialize(Constants.DataFileDirectory + "\\server-main.cfg");
-            Output.SetVerbosityLevel((OutputLevel)ConfigManager.GetValue("output.verbositylevel"));
-            Localization.Initialize(Constants.LangFileDirectory + "\\lang_" + ConfigManager.GetValue("lang") + ".lang");
+            ConfigManager.Initialize(Constants.DataFileDirectory + "server-main.cfg");
+			Output.InitializeStream(true, (OutputLevel)ConfigManager.GetValue("output.verbositylevel"));
+			Output.WriteLine("Initializing Snowlight...");
+			
+            Localization.Initialize(Constants.LangFileDirectory  + "lang_" + ConfigManager.GetValue("lang") + ".lang");
 
             // Process args
             foreach (string arg in args)
@@ -208,7 +186,8 @@ namespace Snowlight
 
             Output.WriteLine(Localization.GetValue("core.init.ok", Math.Round(TimeSpent.TotalSeconds, 2).ToString()), OutputLevel.Notification);
             Output.WriteLine((string)Localization.GetValue("core.init.ok.cmdinfo"), OutputLevel.Notification);
-
+			
+			Console.Write("$" + Environment.UserName.ToLower() + "@snowlight> ");
             Console.Beep();
             Input.Listen(); // This will make the main thread process console while Program.Alive.
         }

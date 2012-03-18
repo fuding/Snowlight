@@ -15,6 +15,9 @@ namespace Snowlight.Game.Items.Wired
         private String mData1;
         private Int32 mData2;
         private Int32 mData3;
+		private Int32 mData4;
+		private String mData5;
+		private Int32 mTime;
 
         public uint ItemId
         {
@@ -71,6 +74,45 @@ namespace Snowlight.Game.Items.Wired
                 mData3 = value;
             }
         }
+		
+		public Int32 Data4
+        {
+            get
+            {
+                return mData4;
+            }
+
+            set
+            {
+                mData4 = value;
+            }
+        }
+		
+		public String Data5
+        {
+            get
+            {
+                return mData5;
+            }
+
+            set
+            {
+                mData5 = value;
+            }
+        }
+		
+		public Int32 Time
+        {
+            get
+            {
+                return mTime;
+            }
+
+            set
+            {
+                mTime = value;
+            }
+        }
 
         public WiredData(uint ItemId, int Type)
         {
@@ -89,9 +131,15 @@ namespace Snowlight.Game.Items.Wired
                 else
                 {
                     MySqlClient.SetParameter("id", ItemId);
-                    MySqlClient.ExecuteNonQuery("INSERT INTO wired_items (item_id, data1, data2, data3) VALUES (@id, '','0','0')");
+                    MySqlClient.ExecuteNonQuery("INSERT INTO wired_items (item_id, data1, data2, data3, data4, data5, time) VALUES (@id, '','0','0', '0','', '0')");
+					mData1 = "";
+                    mData2 = 0;
+                    mData3 = 0;
+			        mData4 = 0;
+					mData5 = "";
+					mTime = 0;
                 }
-            }
+            }						
         }
 
         public void GenerateWiredFromRow(DataRow Row)
@@ -99,6 +147,9 @@ namespace Snowlight.Game.Items.Wired
             mData1 = (string)Row["data1"];
             mData2 = (Int32)Row["data2"];
             mData3 = (Int32)Row["data3"];
+			mData4 = (Int32)Row["data4"];
+			mData5 = (String)Row["data5"];
+			mTime =  (Int32)Row["time"];
         }
 
         public void SynchronizeDatabase(SqlDatabaseClient MySqlClient)
@@ -107,7 +158,11 @@ namespace Snowlight.Game.Items.Wired
             MySqlClient.SetParameter("data1", mData1);
             MySqlClient.SetParameter("data2", mData2);
             MySqlClient.SetParameter("data3", mData3);
-            MySqlClient.ExecuteNonQuery("UPDATE wired_items SET data1 = @data1, data2 = @data2, data3 = @data3 WHERE item_id = @id LIMIT 1");
+			MySqlClient.SetParameter("data4", mData4);
+			MySqlClient.SetParameter("data5", mData5);
+			MySqlClient.SetParameter("time", mTime);
+			
+            MySqlClient.ExecuteNonQuery("UPDATE wired_items SET data1 = @data1, data2 = @data2, data3 = @data3, data4 = @data4, data5 = @data5, time = @time WHERE item_id = @id LIMIT 1");
         }
     }
 }

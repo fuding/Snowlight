@@ -55,6 +55,7 @@ namespace Snowlight.Game.Rooms
         private int mAntiSpamMessagesSent;
         private int mAntiSpamTicks;
         private bool mWalkingBackwards;
+		private uint mFurniOnId;
 
         public uint Id
         {
@@ -438,6 +439,19 @@ namespace Snowlight.Game.Rooms
 
                 return NewPosition;
             }
+        }
+		
+		public uint FurniOnId
+        {
+            get
+            {
+                return mFurniOnId;
+            }
+			
+			set 
+			{
+				mFurniOnId = value;
+			}			
         }
 
         public RoomActor(uint Id, RoomActorType Type, uint ReferenceId, object ReferenceObject, Vector3 Position, int Rotation, RoomInstance Instance)

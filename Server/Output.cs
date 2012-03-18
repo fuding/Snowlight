@@ -32,7 +32,7 @@ namespace Snowlight
             if (EnableLogging)
             {
                 DateTime Now = DateTime.Now;
-                string LogDirectory = Constants.LogFileDirectory + "\\";
+                string LogDirectory = Constants.LogFileDirectory;
                 mLogFilePath = LogDirectory + Now.Day + Now.Month + Now.Year + Now.Hour + Now.Minute + Now.Second + ".log";
 
                 try
@@ -61,11 +61,14 @@ namespace Snowlight
             Console.Clear();
 
             Console.Title = Constants.ConsoleTitle;
-            Console.WindowWidth = Constants.ConsoleWindowWidth;
-            Console.WindowHeight = Constants.ConsoleWindowHeight;
+			if(Environment.OSVersion.Platform != PlatformID.Unix) {
+                Console.WindowWidth = Constants.ConsoleWindowWidth;
+                Console.WindowHeight = Constants.ConsoleWindowHeight;
+			}
 
             ResetColorScheme();
-        }
+			
+		}
 
         private static void ResetColorScheme()
         {
@@ -131,7 +134,7 @@ namespace Snowlight
 
             foreach (string Line in Lines)
             {
-                int Spacing = Console.WindowWidth - Line.Length - 1;
+                int Spacing = Console.WindowWidth - Line.Length - 1; 
                 string Ln = Line;
 
                 for (int s = 0; s < Spacing; s++)

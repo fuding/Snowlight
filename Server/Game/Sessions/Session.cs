@@ -512,10 +512,9 @@ namespace Snowlight.Game.Sessions
             {
                 if (mSocket != null)
                 {
-                    if (Program.DEBUG)
-                    {
-                        Output.WriteLine("[SND][" + mId + "]: " + Constants.DefaultEncoding.GetString(Data), OutputLevel.DebugInformation);
-                    }
+                    
+                    Output.WriteLine("[SND][" + mId + "]: " + Constants.DefaultEncoding.GetString(Data), OutputLevel.DebugInformation);
+                    
                     mSocket.BeginSend(Data, 0, Data.Length, SocketFlags.None, new AsyncCallback(OnDataSent), null);
                 }
             }
@@ -543,13 +542,20 @@ namespace Snowlight.Game.Sessions
             }
         }
 
+        public static int DecodeBit24(string v)
+        {
+            if ((v[0] | v[1] | v[2] | v[3]) < 0)
+                return -1;
+            return ((v[0] << 24) + (v[1] << 16) + (v[2] << 8) + (v[3] << 0));
+        }
+
         private void ProcessData(byte[] Data)
         {
             if (Data.Length == 0)
             {
                 return;
             }
-
+            
             if (Data[0] == 64)
             {
                 int Pos = 0;
@@ -564,7 +570,7 @@ namespace Snowlight.Game.Sessions
                         uint MessageId = Base64Encoding.DecodeUInt32(new byte[] { Data[Pos++], Data[Pos++] });
 
                         byte[] Content = new byte[MessageLength - 2];
-
+                       
                         for (int i = 0; i < Content.Length; i++)
                         {
                             Content[i] = Data[Pos++];
@@ -582,7 +588,7 @@ namespace Snowlight.Game.Sessions
                     {
                         if (Program.DEBUG)
                         {
-                            Output.WriteLine("[RCV][" + mId + "]: " + Message.ToString(), OutputLevel.DebugInformation);
+                            Output.WriteLine("[RCV][" + mId + "]: "+ Message.Id + " " + Message.ToString(), OutputLevel.DebugInformation);
                         }
 
                         try
