@@ -98,12 +98,12 @@ namespace Snowlight
 
                 // Initialize network components
                 Output.WriteLine(Localization.GetValue("core.init.net", ConfigManager.GetValue("net.bind.port").ToString()));
-                mServer = new SnowTcpListener(new IPEndPoint(IPAddress.Any, (int)ConfigManager.GetValue("net.bind.port")),
+                mServer = new SnowTcpListener(new IPEndPoint((IPAddress)ConfigManager.GetValue("net.bind.ip"), (int)ConfigManager.GetValue("net.bind.port")),
                     (int)ConfigManager.GetValue("net.backlog"), new OnNewConnectionCallback(
                         SessionManager.HandleIncomingConnection));
 
                 Output.WriteLine(Localization.GetValue("core.init.net", ConfigManager.GetValue("net.cmd.bind.port").ToString()));
-                musServer = new SnowTcpListener(new IPEndPoint(IPAddress.Any, (int)ConfigManager.GetValue("net.cmd.bind.port")),
+                musServer = new SnowTcpListener(new IPEndPoint((IPAddress)ConfigManager.GetValue("net.cmd.bind.ip"), (int)ConfigManager.GetValue("net.cmd.bind.port")),
                     (int)ConfigManager.GetValue("net.backlog"), new OnNewConnectionCallback(
                         CommandListener.parse));
 

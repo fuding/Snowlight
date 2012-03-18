@@ -38,6 +38,7 @@ namespace Snowlight.Config
             // Net
             mConfigData.Add("net.backlog", new ConfigElement("net.backlog", ConfigElementType.Integer, 50));
             mConfigData.Add("net.bind.ip", new ConfigElement("net.bind.ip", ConfigElementType.IpAddress, IPAddress.Any));
+			mConfigData.Add("net.cmd.bind.ip", new ConfigElement("net.bind.ip", ConfigElementType.IpAddress, "127.0.0.1"));
             mConfigData.Add("net.bind.port", new ConfigElement("net.bind.port", ConfigElementType.Integer, 38101));
             mConfigData.Add("net.cmd.bind.port", new ConfigElement("net.cmd.bind.port", ConfigElementType.Integer, 38102));
             // General
