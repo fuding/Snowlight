@@ -221,7 +221,7 @@ namespace Snowlight.Game.Characters
                 {
                     MySqlClient.SetParameter("userid", mId);
                     MySqlClient.SetParameter("volume", mConfigVolume);
-                    MySqlClient.ExecuteNonQuery("UPDATE characters SET config_volume = @volume WHERE id = @userid LIMIT 1");
+                    MySqlClient.ExecuteNonQuery("UPDATE users SET config_volume = @volume WHERE id = @userid LIMIT 1");
                 }
             }
         }
@@ -466,7 +466,7 @@ namespace Snowlight.Game.Characters
                 }
 
                 MySqlClient.SetParameter("userid", mId);
-                DataTable TagsTable = MySqlClient.ExecuteQueryTable("SELECT * FROM tags WHERE user_id = @userid");
+                DataTable TagsTable = MySqlClient.ExecuteQueryTable("SELECT * FROM user_tags WHERE user_id = @userid");
 
                 foreach (DataRow Row in TagsTable.Rows)
                 {
@@ -490,7 +490,7 @@ namespace Snowlight.Game.Characters
 
             MySqlClient.SetParameter("userid", mId);
             MySqlClient.SetParameter("score", mScore);
-            MySqlClient.ExecuteNonQuery("UPDATE characters SET score = @score WHERE id = @userid LIMIT 1");
+            MySqlClient.ExecuteNonQuery("UPDATE users SET score = @score WHERE id = @userid LIMIT 1");
         }
 
         public void UpdateCreditsBalance(SqlDatabaseClient MySqlClient, int Amount)
@@ -499,7 +499,7 @@ namespace Snowlight.Game.Characters
 
             MySqlClient.SetParameter("id", Id);
             MySqlClient.SetParameter("credits", CreditsBalance);
-            MySqlClient.ExecuteNonQuery("UPDATE characters SET credits_balance = @credits WHERE id = @id LIMIT 1");
+            MySqlClient.ExecuteNonQuery("UPDATE users SET credits_balance = @credits WHERE id = @id LIMIT 1");
         }
 
         public void UpdateActivityPointsBalance(SqlDatabaseClient MySqlClient, int Amount)
@@ -508,7 +508,7 @@ namespace Snowlight.Game.Characters
 
             MySqlClient.SetParameter("id", Id);
             MySqlClient.SetParameter("ap", ActivityPointsBalance);
-            MySqlClient.ExecuteNonQuery("UPDATE characters SET activity_points_balance = @ap WHERE id = @id LIMIT 1");
+            MySqlClient.ExecuteNonQuery("UPDATE users SET activity_points_balance = @ap WHERE id = @id LIMIT 1");
         }
 
         public void SetLastActivityPointsUpdate(SqlDatabaseClient MySqlClient)
@@ -517,7 +517,7 @@ namespace Snowlight.Game.Characters
 
             MySqlClient.SetParameter("id", mId);
             MySqlClient.SetParameter("aplu", mTimestampLastActivityPointsUpdate);
-            MySqlClient.ExecuteNonQuery("UPDATE characters SET activity_points_last_update = @aplu WHERE id = @id LIMIT 1");          
+            MySqlClient.ExecuteNonQuery("UPDATE users SET activity_points_last_update = @aplu WHERE id = @id LIMIT 1");          
         }
 
         public void UpdateFigure(SqlDatabaseClient MySqlClient, string NewGender, string NewFigure)
@@ -528,7 +528,7 @@ namespace Snowlight.Game.Characters
             MySqlClient.SetParameter("userid", mId);
             MySqlClient.SetParameter("figure", mFigure);
             MySqlClient.SetParameter("gender", NewGender);
-            MySqlClient.ExecuteNonQuery("UPDATE characters SET gender = @gender, figure = @figure WHERE id = @userid LIMIT 1");
+            MySqlClient.ExecuteNonQuery("UPDATE users SET gender = @gender, figure = @figure WHERE id = @userid LIMIT 1");
         }
 
         public void UpdateMotto(SqlDatabaseClient MySqlClient, string NewMotto)
@@ -537,7 +537,7 @@ namespace Snowlight.Game.Characters
 
             MySqlClient.SetParameter("userid", mId);
             MySqlClient.SetParameter("motto", NewMotto);
-            MySqlClient.ExecuteNonQuery("UPDATE characters SET motto = @motto WHERE id = @userid LIMIT 1");
+            MySqlClient.ExecuteNonQuery("UPDATE users SET motto = @motto WHERE id = @userid LIMIT 1");
         }
 
         public void SetWardrobeSlot(SqlDatabaseClient MySqlClient, int SlotId, string Figure, CharacterGender Gender)
@@ -569,7 +569,7 @@ namespace Snowlight.Game.Characters
 
             MySqlClient.SetParameter("userid", mId);
             MySqlClient.SetParameter("roomid", RoomId);
-            MySqlClient.ExecuteNonQuery("UPDATE characters SET home_room = @roomid WHERE id = @userid LIMIT 1");
+            MySqlClient.ExecuteNonQuery("UPDATE users SET home_room = @roomid WHERE id = @userid LIMIT 1");
         }
 
         public void SynchronizeStatistics(SqlDatabaseClient MySqlClient)
@@ -581,7 +581,7 @@ namespace Snowlight.Game.Characters
             MySqlClient.SetParameter("cooldown", mModerationTicketsCooldown);
             MySqlClient.SetParameter("bans", mModerationBans);
             MySqlClient.SetParameter("cautions", mModerationCautions);
-            MySqlClient.ExecuteNonQuery("UPDATE characters SET timestamp_lastvisit = @timestamp, moderation_tickets = @tickets, moderation_tickets_abusive = @ticketsabuse, moderation_tickets_cooldown = @cooldown, moderation_bans = @bans, moderation_cautions = @cautions WHERE id = @id LIMIT 1");
+            MySqlClient.ExecuteNonQuery("UPDATE users SET timestamp_lastvisit = @timestamp, moderation_tickets = @tickets, moderation_tickets_abusive = @ticketsabuse, moderation_tickets_cooldown = @cooldown, moderation_bans = @bans, moderation_cautions = @cautions WHERE id = @id LIMIT 1");
         }
 
         public void SynchronizeRespectData(SqlDatabaseClient MySqlClient)
@@ -590,7 +590,7 @@ namespace Snowlight.Game.Characters
             MySqlClient.SetParameter("respectpts", mRespectPoints);
             MySqlClient.SetParameter("respectcredh", mRespectCreditHuman);
             MySqlClient.SetParameter("respectcredp", mRespectCreditPets);
-            MySqlClient.ExecuteNonQuery("UPDATE characters SET respect_points = @respectpts, respect_credit_humans = @respectcredh, respect_credit_pets = @respectcredp WHERE id = @id LIMIT 1");
+            MySqlClient.ExecuteNonQuery("UPDATE users SET respect_points = @respectpts, respect_credit_humans = @respectcredh, respect_credit_pets = @respectcredp WHERE id = @id LIMIT 1");
         }
 
         public void Mute(SqlDatabaseClient MySqlClient, int TimeToMute)
@@ -602,7 +602,7 @@ namespace Snowlight.Game.Characters
             {
                 MySqlClient.SetParameter("id", mId);
                 MySqlClient.SetParameter("mutetime", mModerationMutedUntil);
-                MySqlClient.ExecuteNonQuery("UPDATE characters SET moderation_muted_until_timestamp = @mutetime WHERE id = @id LIMIT 1");
+                MySqlClient.ExecuteNonQuery("UPDATE users SET moderation_muted_until_timestamp = @mutetime WHERE id = @id LIMIT 1");
             }
         }
 
@@ -611,7 +611,7 @@ namespace Snowlight.Game.Characters
             mModerationMutedUntil = 0;
 
             MySqlClient.SetParameter("id", mId);
-            MySqlClient.ExecuteNonQuery("UPDATE characters SET moderation_muted_until_timestamp = 0 WHERE id = @id LIMIT 1");
+            MySqlClient.ExecuteNonQuery("UPDATE users SET moderation_muted_until_timestamp = 0 WHERE id = @id LIMIT 1");
         }
     }
 }

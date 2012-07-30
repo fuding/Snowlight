@@ -197,8 +197,8 @@ namespace Snowlight
             MySqlClient.ExecuteNonQuery("UPDATE rooms SET current_users = 0");
             MySqlClient.SetParameter("timestamp", UnixTimestamp.GetCurrent());
             MySqlClient.ExecuteNonQuery("UPDATE room_visits SET timestamp_left = @timestamp WHERE timestamp_left = 0");
-            MySqlClient.ExecuteNonQuery("UPDATE characters SET auth_ticket = ''");
-            MySqlClient.ExecuteNonQuery("UPDATE characters SET online = '0'");
+            MySqlClient.ExecuteNonQuery("UPDATE users SET auth_ticket = ''");
+            MySqlClient.ExecuteNonQuery("UPDATE users SET online = '0'");
             MySqlClient.SetParameter("timestamp", UnixTimestamp.GetCurrent());
             MySqlClient.ExecuteNonQuery("UPDATE server_statistics SET sval = @timestamp WHERE skey = 'stamp' LIMIT 1");
             MySqlClient.ExecuteNonQuery("UPDATE server_statistics SET sval = '1' WHERE skey = 'online_state' LIMIT 1");

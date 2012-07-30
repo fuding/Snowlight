@@ -39,7 +39,7 @@ namespace Snowlight.Util
                 using (SqlDatabaseClient MySqlClient = SqlDatabaseManager.GetClient())
                 {
                     MySqlClient.SetParameter("id", UserId);
-                    string Username = (string)MySqlClient.ExecuteScalar("SELECT username FROM characters WHERE id = @id LIMIT 1");
+                    string Username = (string)MySqlClient.ExecuteScalar("SELECT username FROM users WHERE id = @id LIMIT 1");
 
                     if (Username != null && Username.Length > 0)
                     {
@@ -67,7 +67,7 @@ namespace Snowlight.Util
                 using (SqlDatabaseClient MySqlClient = SqlDatabaseManager.GetClient())
                 {
                     MySqlClient.SetParameter("username", Name);
-                    object Result = MySqlClient.ExecuteScalar("SELECT id FROM characters WHERE username = @username LIMIT 1");
+                    object Result = MySqlClient.ExecuteScalar("SELECT id FROM users WHERE username = @username LIMIT 1");
 
                     if (Result != null)
                     {

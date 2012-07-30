@@ -160,7 +160,7 @@ namespace Snowlight.Game.Handlers
             using (SqlDatabaseClient MySqlClient = SqlDatabaseManager.GetClient())
             {
                 MySqlClient.SetParameter("username", Username);
-                DataRow Taken = MySqlClient.ExecuteQueryRow("SELECT null FROM characters WHERE username = @username LIMIT 1");
+                DataRow Taken = MySqlClient.ExecuteQueryRow("SELECT null FROM users WHERE username = @username LIMIT 1");
                 if (Taken == null)
                 {
                     ServerMessage awnser = new ServerMessage(571);

@@ -637,7 +637,7 @@ namespace Snowlight.Game.Sessions
                 }
 
                 MessengerHandler.MarkUpdateNeeded(this, 0, true);
-                MySqlClient.ExecuteNonQuery("UPDATE characters SET online = '0' WHERE id = " + CharacterId + " LIMIT 1");
+                MySqlClient.ExecuteNonQuery("UPDATE users SET online = '0' WHERE id = " + CharacterId + " LIMIT 1");
             }
 
             Output.WriteLine("Stopped and disconnected client " + Id + ".", OutputLevel.DebugInformation);

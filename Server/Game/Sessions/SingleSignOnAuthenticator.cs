@@ -92,7 +92,7 @@ namespace Snowlight.Game.Sessions
                 string LogName = string.Empty;
 
                 MySqlClient.SetParameter("ticket", Ticket);
-                DataRow Row = MySqlClient.ExecuteQueryRow("SELECT id,username FROM characters WHERE auth_ticket = @ticket LIMIT 1");
+                DataRow Row = MySqlClient.ExecuteQueryRow("SELECT id,username FROM users WHERE auth_ticket = @ticket LIMIT 1");
 
                 if (Row != null)
                 {
@@ -127,7 +127,7 @@ namespace Snowlight.Game.Sessions
                 // Mark as a successful login and continue
 
                 Output.WriteLine("User " + LogName + " (ID " + UserId + ") has logged in from " + RemoteAddress + ".");
-                MySqlClient.ExecuteNonQuery("UPDATE characters SET online = '1' WHERE id = " + UserId + " LIMIT 1");
+                MySqlClient.ExecuteNonQuery("UPDATE users SET online = '1' WHERE id = " + UserId + " LIMIT 1");
                 mSuccessfulLoginCount++;
                 return UserId;
             }
@@ -142,7 +142,7 @@ namespace Snowlight.Game.Sessions
             MySqlClient.SetParameter("id", UserId);
             MySqlClient.SetParameter("lastip", AddressToLog);
             MySqlClient.SetParameter("lastonline", UnixTimestamp.GetCurrent());
-            MySqlClient.ExecuteNonQuery("UPDATE characters SET auth_ticket = '', last_ip = @lastip, timestamp_lastvisit = @lastonline WHERE id = @id LIMIT 1");
+            MySqlClient.ExecuteNonQuery("UPDATE users SET auth_ticket = '', last_ip = @lastip, timestamp_lastvisit = @lastonline WHERE id = @id LIMIT 1");
         }
     }
 }

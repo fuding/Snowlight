@@ -82,7 +82,7 @@ namespace Snowlight.Game.Characters
             }
 
             MySqlClient.SetParameter("id", CharacterId);
-            DataRow Row = MySqlClient.ExecuteQueryRow("SELECT * FROM characters WHERE id = @id LIMIT 1");
+            DataRow Row = MySqlClient.ExecuteQueryRow("SELECT * FROM users WHERE id = @id LIMIT 1");
 
             if (Row != null)
             {

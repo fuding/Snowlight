@@ -84,6 +84,11 @@ namespace Snowlight.Game.Rights
 
             foreach (String badge in mRightsBages.Values)
             {
+                if (badge == "")
+                {
+                    continue;
+                }
+
                 if (mRightsBages.ContainsValue(badge) && !mRightsBages.ContainsKey(Rank) || mRightsBages[Rank] != badge)
                 {
                     Session.BadgeCache.RemoveBadge(badge);

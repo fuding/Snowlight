@@ -155,7 +155,7 @@ namespace Snowlight.Game.Messenger
             using (SqlDatabaseClient MySqlClient = SqlDatabaseManager.GetClient())
             {
                 MySqlClient.SetParameter("query", SearchQuery + "%");
-                DataTable Table = MySqlClient.ExecuteQueryTable("SELECT id FROM characters WHERE username LIKE @query LIMIT 50");
+                DataTable Table = MySqlClient.ExecuteQueryTable("SELECT id FROM users WHERE username LIKE @query LIMIT 50");
 
                 foreach (DataRow Row in Table.Rows)
                 {

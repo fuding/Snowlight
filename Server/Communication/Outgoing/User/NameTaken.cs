@@ -15,7 +15,7 @@ namespace Snowlight.Communication.Outgoing.User
 
             using (SqlDatabaseClient MySqlClient = SqlDatabaseManager.GetClient())
             {
-                Data = MySqlClient.ExecuteQueryTable("SELECT SQL_NO_CACHE * FROM tags ORDER BY rand() LIMIT 6");
+                Data = MySqlClient.ExecuteQueryTable("SELECT SQL_NO_CACHE * FROM user_tags ORDER BY rand() LIMIT 6");
 
             }
 
